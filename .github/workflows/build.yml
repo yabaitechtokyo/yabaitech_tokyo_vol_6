@@ -1,0 +1,30 @@
+name: build
+on: push
+
+jobs:
+  publish:
+    name: Build pdf
+    runs-on: ubuntu-latest
+    container:
+      image: amutake/satysfi:latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install Satyrographos dependencies and fonts
+        run: |
+          export HOME=/root
+          eval $(opam env)
+          opam update
+          opam pin add yabai2020a.opam "file://${PWD}"
+          satyrographos install
+      - name: Build with SATySFi
+        run: |
+          export HOME=/root
+          eval $(opam env)
+          satysfi main.saty
+      - name: Install Apt dependencies
+        run: apt-get update && apt-get install -y xz-utils liblzma-dev
+      - name: Upload artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: yabai2020a
+          path: main.pdf

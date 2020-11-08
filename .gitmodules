@@ -1,0 +1,6 @@
+[submodule "pandoc-satysfi-template"]
+	path = pandoc-satysfi-template
+	url = https://github.com/MasWag/pandoc-satysfi-template.git
+[submodule "08bfc2e0d5a3e6b4e95ddd4998f5cf3b"]
+	path = dblp2satysfi
+	url = https://gist.github.com/08bfc2e0d5a3e6b4e95ddd4998f5cf3b.git

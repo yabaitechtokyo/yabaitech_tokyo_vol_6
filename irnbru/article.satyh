@@ -1,0 +1,15 @@
+@require: itemize
+@require: code
+@require: base/image
+
+@require: class-yabaitech/yabaitech
+
+module Irnbru : sig
+
+  val article : block-text
+
+end = struct
+
+  let article = '<>
+
+end

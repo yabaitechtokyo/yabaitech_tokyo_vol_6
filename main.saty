@@ -1,0 +1,46 @@
+@require: base/debug
+@require: class-yabaitech/yabaitech
+
+@import: gfn/article
+@import: irnbru/article
+@import: maswag/article
+@import: zeptometer/article
+@import: binary/article
+@import: nullpo_head/article
+@import: wasabiz/article
+@import: censored/article
+@import: mh/article
+
+let () = Debug.log ``
+=====================
+YABAITECH.TOKYO vol.5
+
+　 ∧,,∧
+　(；`・ω・）　　｡･ﾟ･⌒） pdf 作るよ！！
+　/　　 ｏ━ヽニニフ))
+　しー-Ｊ
+
+=====================
+`` in
+
+document (|
+  title = `YABAITECH.TOKYO`;
+  volume = `vol.6`;
+  date = `2020`;
+  author = `yabaitech.tokyo`;
+  email = `admin@yabaitech.tokyo`;
+  website = `https://yabaitech.tokyo`;
+  publisher = `どこかの出版社`;
+  front = Option.none;
+  history = `pohe`;
+  |) '<
+    #Zeptometer.article;
+    #Gfn.article;
+    #Irnbru.article;
+    #MasWag.article;
+    #Binary.article;
+    #NullpoHead.article;
+    #Wasabiz.article;
+    #Censored.article;
+    #Mh.article;
+>
