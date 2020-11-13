@@ -9,6 +9,9 @@ jobs:
       image: amutake/satysfi:latest
     steps:
       - uses: actions/checkout@v1
+      - name: Install pre-dependencies
+        run: |
+          apt-get update && apt-get install pkg-config
       - name: Install Satyrographos dependencies and fonts
         run: |
           export HOME=/root
