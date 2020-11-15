@@ -246,10 +246,10 @@ end = struct
       >
 
       +section{さまざまな実装} <
-        +subsection{ナイーブな実装} <
+        +subsection?:(`evaluator-naive`){ナイーブな実装} <
           +listing{
-            * \dfn{シーケンシャル速度}（1.33億ハンド）: 64.6秒 (207万評価/秒)
-            * \dfn{ランダムアクセス速度} （1億ハンド）: 53.2秒 (188万評価/秒)
+            * \dfn{シーケンシャル速度}（1.33億ハンド）: 64.8秒（206万評価/秒）
+            * \dfn{ランダムアクセス速度} （1億ハンド）: 52.4秒（191万評価/秒）
             * \dfn{メモリ使用量}: 極小
           }
 
@@ -289,37 +289,37 @@ end = struct
             それでは、関数`int evaluate_hand_naive_5(const vector<int> &hand);`を続いて
             定義していきましょう。ナイーブとは言えども、ビット演算を利用した効率的な実装を
             目指すこととし、まずは出現したスートとランクを管理するビットセットと、
-            各ランクの出現回数の情報を変数に代入していきます。
+            各ランクの出現回数を管理する変数を準備します。
 
             \d-code(```
-              int suit_bitset = 0;
-              int rank_bitset = 0;
-              int rank_count[13] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+              int suitset = 0;
+              int rankset = 0;
+              int rankcount[13] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
               for (int card : hand) {
                 int suit = card % 4;
                 int rank = card / 4;
-                suit_bitset |= 1 << suit;
-                rank_bitset |= 1 << rank;
-                ++rank_count[rank];
+                suitset |= 1 << suit;
+                rankset |= 1 << rank;
+                ++rankcount[rank];
               }
             ```);
 
             さらに、出現回数からランクのビットセットを逆引きできる変数も準備します。
 
             \d-code(```
-              int count_to_ranks[5] = { 0, 0, 0, 0, 0 };
+              int rankset_of_count[5] = { 0, 0, 0, 0, 0 };
               for (int rank = 0; rank < 13; ++rank) {
-                count_to_ranks[rank_count[rank]] |= 1 << rank;
+                rankset_of_count[rankcount[rank]] |= 1 << rank;
               }
             ```);
 
             以上の変数が用意できれば、フラッシュとストレートの判定は以下のように行えます。
 
             \d-code(```
-              bool is_flush = count_ones(suit_bitset) == 1;
-              int is_straight = rank_bitset & (rank_bitset << 1) & (rank_bitset << 2)
-                              & (rank_bitset << 3) & (rank_bitset << 4);
-              if (rank_bitset == 0b1'0000'0000'1111) is_straight = 1 << 3;
+              bool is_flush = count_ones(suitset) == 1;
+              int is_straight = rankset & (rankset << 1) & (rankset << 2)
+                              & (rankset << 3) & (rankset << 4);
+              if (rankset == 0b1'0000'0000'1111) is_straight = 1 << 3;
             ```);
 
             ここで、`count_ones()`は2進数表記でのビットの立っている数を返す関数とします
@@ -355,28 +355,28 @@ end = struct
               if (is_flush && is_straight) {
                 // straight flush
                 return (8 << 26) | is_straight;
-              } else if (count_to_ranks[4]) {
+              } else if (rankset_of_count[4]) {
                 // four of a kind
-                return (7 << 26) | (count_to_ranks[4] << 13) | count_to_ranks[1];
-              } else if (count_to_ranks[3] && count_to_ranks[2]) {
+                return (7 << 26) | (rankset_of_count[4] << 13) | rankset_of_count[1];
+              } else if (rankset_of_count[3] && rankset_of_count[2]) {
                 // full house
-                return (6 << 26) | (count_to_ranks[3] << 13) | count_to_ranks[2];
+                return (6 << 26) | (rankset_of_count[3] << 13) | rankset_of_count[2];
               } else if (is_flush) {
                 // flush
-                return (5 << 26) | rank_bitset;
+                return (5 << 26) | rankset;
               } else if (is_straight) {
                 // straight
                 return (4 << 26) | is_straight;
-              } else if (count_to_ranks[3]) {
+              } else if (rankset_of_count[3]) {
                 // three of a kind
-                return (3 << 26) | (count_to_ranks[3] << 13) | count_to_ranks[1];
-              } else if (count_to_ranks[2]) {
+                return (3 << 26) | (rankset_of_count[3] << 13) | rankset_of_count[1];
+              } else if (rankset_of_count[2]) {
                 // two pair or one pair
-                int num_pairs = count_ones(count_to_ranks[2]);
-                return (num_pairs << 26) | (count_to_ranks[2] << 13) | count_to_ranks[1];
+                int num_pairs = count_ones(rankset_of_count[2]);
+                return (num_pairs << 26) | (rankset_of_count[2] << 13) | rankset_of_count[1];
               } else {
                 // high card
-                return (0 << 26) | rank_bitset;
+                return (0 << 26) | rankset;
               }
             ```);
           }
@@ -389,8 +389,77 @@ end = struct
         >
 
         +subsection{7枚のカードを直接評価する実装（ナイーブ）} <
+          +listing{
+            * \dfn{シーケンシャル速度}（1.33億ハンド）: 4.32秒（3100万評価/秒）
+            * \dfn{ランダムアクセス速度} （1億ハンド）: 4.19秒（2390万評価/秒）
+            * \dfn{メモリ使用量}: 極小
+          }
+
           +p{
-            ぽへぽへ
+            \ref-subsection(`evaluator-naive`); で紹介したナイーブな実装は 7 choose 5 通りの
+            カードの選び方をすべて試すものでしたが、7枚のカードが与えられたときにそれらを
+            直接評価する戦略も考えられます。
+            例えば、KcTd8c4c4h4s3hというハンドが与えられたとき、人間は 7 choose 5 通りのカードの
+            選び方を考えなくとも、まず4のスリーカードを認識し、残ったカードのうちランクの高い
+            KcとTdを加えた4c4h4sKcTdが最終的な5枚組になることを瞬時に把握できるでしょう。
+          }
+
+          +p{
+            このような戦略に基づく実装を正確に書き下すのは、5枚のハンドを評価する実装と比べてさらに
+            注意力を要しますが、丁寧に考察をしていけばそれなりに簡潔に記述することが可能です。
+            まずは、ユーティリティ関数として上位`n`ビットを保持する関数を定義しましょう:
+
+            \d-code(```
+              int keep_n_msb(int x, int n) {
+                int result = 0;
+                for (int i = 0; i < n; ++i) {
+                  int m = msb(x);
+                  x ^= m;
+                  result |= m;
+                }
+                return result;
+              }
+            ```);
+
+            ここで、 `msb(x)` は入力 `x` の最上位ビットのみが立った値を返す関数とします
+            （gcc/clangでは `int` 型に対しては `1 << (__builtin_clz(x) ^ 31)` として定義できます）。
+            このような関数を用意できると、先ほどの例のようなスリーカードの処理は次のように
+            書き下すことができます:
+
+            \d-code(```
+              // スリーカードより強い役ではないことが確認できているとする
+              if (rankset_of_count[3]) {
+                // three of a kind
+                int remaining = keep_n_msb(rankset_of_count[1], 2);
+                return (3 << 26) | (rankset_of_count[3] << 13) | remaining;
+              }
+            ```);
+
+            本節では実装のすべての紹介は行いませんが、この戦略に基づく実装を実際に書いてみようと
+            いう場合は、ストレートとフラッシュが両方成立しているからといってストレートフラッシュとは
+            限らない点（ストレートフラッシュは同じスート内でストレートを完成させる必要がある）、
+            3枚組が2つある場合の処理（フルハウス）、2枚組が3つある場合の処理（ツーペア）などに
+            気をつけてみてください。
+          }
+
+          +p{
+            筆者の実装では、\ref-subsection(`evaluator-naive`); の実装と比べて
+            12～15倍の高速化を実現することができました。
+            どの5枚が最終的に用いられたかの情報を復元する処理は自明には書けなくなって
+            しまいましたが、それと引き換えにこれだけの高速化が施せれば十分でしょう。
+          }
+
+          +p{
+            このような記事を書いておいて言うのもなんですが、ポーカーの役判定が必要となるような
+            場面のほとんどは、\ref-subsection(`evaluator-naive`); と本節に示したような
+            ナイーブな処理で正直間に合うようにも思います。
+            ここからさまざまなテクニックを用いて処理を高速化していくわけですが、
+            最終的に得られるプログラムは本節のものと比べて25倍速いという程度に留まります。
+            この25倍を引き出す過程が面白いと感じたからこそこのような記事を
+            書いているわけではありますが、25倍遅い程度で済むなら明快な処理を好むという方も
+            少なくないのではないでしょうか。
+            また、ナイーブな実装は高速な実装の動作をテストする際にも役に立ちますので、
+            ナイーブなものが悪いということでは決してない点は留意していただければと思います。
           }
         >
       >
