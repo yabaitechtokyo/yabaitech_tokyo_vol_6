@@ -1,0 +1,28 @@
+@require: pervasives
+@require: vdecoset
+
+let font-ratio-cjk = 0.88
+let get-quad-size ctx =
+  get-font-size ctx *' font-ratio-cjk
+% This +quote is copied from mdja.satyh in SATySFi
+let-block ctx +quote it =
+  let qsize = get-quad-size ctx in
+  let pads = (qsize, 0pt, 0pt, 0pt) in
+  let decoset = VDecoSet.quote-round 6pt 4pt (Gray(0.75)) in
+  block-frame-breakable ctx pads decoset
+    (fun ctx -> read-block ctx it)
+
+let-inline ctx \BiBTeX =
+  let size = get-font-size ctx in
+  let f = read-inline ctx in
+  let fIB = ctx |> set-font-size (size *' 0.7)
+               |> read-inline
+  in
+  let fE = ctx |> set-manual-rising (0pt -' (size *' 0.25))
+               |> read-inline
+  in
+  let ib =
+    f {B} ++ fIB {IB}
+      ++ f {T} ++ kern (size *' 0.125) ++ fE {E} ++ f {X}
+  in
+    script-guard Latin (no-break ib)

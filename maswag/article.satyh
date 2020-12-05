@@ -1,8 +1,11 @@
 @require: itemize
 @require: code
 @require: base/image
+@require: pervasives
 
 @require: class-yabaitech/yabaitech
+
+@import: local
 
 module MasWag : sig
 
@@ -10,6 +13,199 @@ module MasWag : sig
 
 end = struct
 
-  let article = '<>
+let bibliography = []
+
+let article = '<
+    +chapter ?:(`maswag-article`)
+    (|
+        bibliography = bibliography;
+        title = {GNU Emacsで\LaTeX;文書を書く話};
+        author = {MasWag};
+        title-for-toc = Option.none;
+        subtitle = Option.none;
+    |)
+    <
+    +section ?:(`はじめに`) {はじめに} <
+    +subsection ?:(`emacsgnu-emacsとは`) {Emacs、GNU Emacsとは} <
+    +quote<
+    +p {
+      メロスにはLispがわからぬ。
+    }>
+
+    +p {
+      時は200X年、\*nix業界ではvi/VimとEmacs系というテキストエディタ界の二大巨塔で争う、エディタ戦争というエクストリームスポーツがあった\footnote{
+      2000年代にはまだAtomもVSCodeもなく、やっと2008年にSublime Textが登場した頃なのであった
+    }。
+    viは遥か遠い昔にedというラインエディタから派生して登場したスクリーンエディタでVimはそのviの派生、Emacs系のテキストエディタというのはこれまた遥か遠い昔にTECOというラインエディタと関係して生まれたスクリーンエディタであるオリジナルのEmacsやその代替のエディタであり、vi/VimとEmacs系エディタの両者の派閥が云々…という話は本記事の本題ではないのでこれ以上深追いしないでおきます。
+    本来単にEmacsと書いた場合GNU Emacs以外にも例えばMicroEMACSなどを含むEmacs系のエディタ全般を指しますが、本記事ではGNU Emacs以外の話はしないので、以下GNU Emacsのことを単にEmacsと書きます。
+    \footnote{
+      というのは変な突っ込みが入らないための単なるおまじないであり、今時Emacsと言われてGNU Emacs以外のエディタの事を考える人はほぼいないでしょう
+    }
+    GNU EmacsはEmacs LispというLisp方言で拡張を行うことができ様々な拡張機能が実装されてはいるものの、 筆者を含めEmacs LispやEmacsの拡張機能のエコシステムに詳しくない人にはなかなか取っ付き辛いです。
+    }
+    >
+    +subsection ?:(`latexとは`) {\LaTeX;とは} <
+    +quote<
+    +p {
+      吾輩はてふである。名前はまだ無い。
+    }
+    +p {
+      どこで生れたか頓と見當がつかぬ。何でも薄暗いじめじめした所でニヤーニヤー泣いて居た事丈は記憶して居る。吾輩はこゝで始めて組版処理システムといふものを見た。然もあとで聞くとそれは\TeX;といふ組版処理システム中で一番獰悪な種族であつたさうだ。
+    }>
+
+    +p {
+      \LaTeX;は組版処理システムである。筆者は\LaTeX;のことは良くわからないですし今回の記事の本題でもないので、これ以上の\LaTeX;の説明はWikipediaや\TeX; wikiを参照してください。
+    \SATySFi;という型も付いていて比較的全うな組版処理システムを使っておきながらなぜ\LaTeX;を使う話を書いているのか、という気もしますが、出版社や学会の定型フォーマットに従わなければならない場合、今日\SATySFi;のテンプレートが提供されているケースはまずないので結局\LaTeX;を使わなければならない場面はかなり多いです。
+    仮に文書の書式が自由であっても、複数人で文書を書く場合には、全員が\SATySFi;で文書を書ける弊サークルの様な例外を除いては、皆がある程度扱うことのできる組版処理システムと云うことで\LaTeX;を採用することも少なくないでしょう。
+    \footnote{
+      実は弊サークルでも最初期には\LaTeX;を使うという案もありました
+    }
+    }
+    >
+    +subsection ?:(`この文書は何`) {この文書は何?} <
+    +p {
+      本記事ではEmacs系エディタの中でもかなり長い間主流として使われているGNU Emacsの上で\LaTeX;の文書を書く際の設定について扱います。
+    前述の通り GNU EmacsではEmacs Lispを使って様々な拡張機能を書くことや設定を行うことができますが、Emacs Lispに詳しくない人にとっては自分で一から書くのは大変です。また、どんな便利なパッケージがあるかなどの情報を得るのも頑張って調べる必要があります。この記事では「とりあえずこういう設定をするとそれなりに良いぞ」というものを見せることを目的とします。これが最善の方法ではないと思いますし、そもそも各人で最適な設定は異なると思いますが、自分にとって使いやすい設定を探す上で役立つと幸いです。
+    }
+    >
+    >
+    +section ?:(`おことわり`) {おことわり} <
+    +p {
+      本記事では\LaTeX;及び\BiBTeX;というものを聞いたことがあったり、最低限の使い方を知っていることを前提にしています。これらの使い方がわからない場合は\TeX; Wikiの\href(`https://texwiki.texjp.org/?\LaTeX;\%E5\%85\%A5\%E9\%96\%80`){\LaTeX;入門}の記事等を参考にしてください。
+    }
+    +p {
+      また、本記事ではEmacs Lispの細かい言語機能などの知識は仮定しませんが\footnote{
+      そもそも筆者自身もがEmacs Lispの詳細をわかっていないです
+    }、Emacsの使い方を最低限理解していることは前提としています。
+    例えばメジャーモードとマイナーモード等の用語や、 \code(`M-x`); や \code(`C-c`); などの良くEmacsの説明で使う表記は前置きなく使います。Emacsの初心者向けの説明は、例えば Emacs JP にある\href(`https://emacs-jp.github.io/tips/emacs-in-2020`){入門記事}を参照してください。
+    }
+    +p {
+      本記事の内容はGUI版のGNU Emacs 27で動作確認を行っています。古い版のEmacsでは動かないものもあるかもしれませんし、Spacemacs等での動作確認も行っていません。また、mac OSとLinuxで動作確認をしていますが、Windowsでは(持ってないので)動作確認を行っていません。
+    }
+    +p {
+      また、本記事の内容は後日別途無償公開する可能性が多いにあります。
+    }
+    >
+    +section ?:(`下ごしらえ`) {下ごしらえ} <
+    +subsection ?:(`package.el`) {\code(`package.el`);} <
+    +p {
+      Emacsのパッケージのインストールは\href(`https://emacs-jp.github.io/packages/package`){package.el}を使います。package.elはEmacs 24以降では標準搭載されているパッケージ管理ツールです。一応Emacs 23でも自分でインストールすることでpackage.elを使うことは可能ですが、特殊な事情がある場合を除いて新しいEmacsを使う方が良いと思います。
+    }
+    +p {
+      Emacs 24以降向けのpackage.elの設定方法は以下の様になります。
+    }
+    +code(`
+    (require 'package)
+    (add-to-list 'package-archives
+                 '("melpa" . "https://melpa.org/packages/") t)
+    (package-initialize)
+    (package-refresh-contents)
+    `);
+    >
+    +subsection ?:(`use-package`) {\code(`use-package`);} <
+    +p {
+      Emacsのパッケージの設定には\href(`https://github.com/jwiegley/use-package`){use-package}を使います。(use-packageの登場以前の様に) \code(`(require ...)`); \code(`(autoload ...)`); の様な生のEmacs Lispを使って設定をすることも可能ですが、use-packageを使うとマクロを使ってより簡潔に設定を書くことができます。\footnote{
+      筆者はまだ使ったことがないですが、今時はuse-packageではなく [[https://github.com/conao3/leaf.el][leaf.el]] の方が良いかもしれないです。この様に流行のパッケージが移り変るのも最適にEmacsを設定することを難しくしています。
+    }
+    }
+    +p {
+      use-packageのインストール及び設定方法は以下の様になります。
+    }
+    +code(`
+    (package-install 'use-package)
+    (require 'use-package)
+    `);
+    >
+    >
+    +section ?:(`yatex-筆者おすすめのlatex用メジャーモード`) {YaTeX: 筆者おすすめの\LaTeX;用メジャーモード} <
+    +p {
+      \href(`https://www.yatex.org/`){YaTeX} (Yet Another \TeX; mode for Emacs、野鳥)は筆者が長年使っている\LaTeX;用のメジャーモードです。Emacsには標準で\TeX; modeも搭載されていますが、YaTeXの方がより高機能です。YaTeXと並んでAUC\TeX;も人気がある\LaTeX;用メジャーモードの様ですが、筆者は使ったことがありません。
+    }
+    +subsection ?:(`補完`) {補完} <
+    +p {
+      YaTeXは様々な場面で\LaTeX;のコマンドを補完することができます。詳細は\href(`https://www.yatex.org/~yuuji/bin/info2www.cgi?(yatexj)Completion`){公式ドキュメント}にありますが、以下ではその中でも特に良く使うものを紹介していきます。
+    }
+    +subsubsection{section型補完: \code(`\foo{...}`);: C-c C-s} <
+    +p {
+      section型補完は \code(`\コマンド名{...}`); の形式の\LaTeX;コマンドの補完に用います。名前の通り \code(`\section{...}`); や、 \code(`\documentclass{...}`); 、 \code(`\ref{...}`); 、 \code(`\cite{...}`); などの例があります。
+    section型補完を行う場合は、 \code(`C-c C-s`); を打つと補完すべき\LaTeX;コマンドを聞かれるので、入力します。 \code(`\section{...}`); の様に単にコマンド名 + 内容を入力するものの場合はこれで終了ですが、 \code(`\documentclass{...}`); の様にオプションを指定できる\LaTeX;コマンドや \code(`\ref{...}`); の様にこれまでに設定したラベルを選択するものの場合、追加でオプションを聞かれたり既存のラベルを選択する画面が表示されたりします。
+    }
+    +p {
+      また、section型補完ではありませんが、例えば \code(`\section{foo}`); を \code(`\subsection{foo}`); に変更するなど、既に使われているコマンドを別のものに変更したい場合には、 \code(`\section`); の部分で \code(`C-c C-c`); を打つことでコマンドの置き換えができます。
+    }
+    >
+    +subsubsection{begin型補完: \code(`\begin{foo}...\end{foo}`);: C-c C-b} <
+    +p {
+      begin型補完は \code(`\begin{環境名}...\end{環境名}`); の形式の入力の補完に用います。 \code(`\begin{document}...\end{document}`); や、 \code(`\begin{itemize}...\end{itemize}`); 、 \code(`\begin{figure}...\end{figure}`); 、 \code(`\begin{tabular}...\end{tabular}`); などの例があります。
+    begin型補完を行う方法は、 \code(`C-c C-b`); に続けて環境名に対応した一文字を打つ方法と、 \code(`C-c C-b SPC`); を打った後に補完すべき環境名を聞かれるので、適宜入力する方法の二種類があります。前者の方がタイプ数が少ないので一見便利そうですが、予め指定された少ない数の環境名にしか対応していないため、実際には \code(`C-c C-b SPC`); を使う場面の方が多いです\footnote{
+      個人の感想です
+    }。
+    }
+    +p {
+      また、section型補完と同様に、例えば \code(`\begin{figure}...\end{figure}`); を \code(`\begin{wrapfigure}...\end{wrapfigure}`); に変更するなど、既に使われている環境を別のものに変更したい場合には、 \code(`\begin{foo}`); や \code(`\end{foo}`); の部分で \code(`C-c C-c`); を打つことでコマンドの置き換えができます。
+    }
+    >
+    +subsubsection{maketitle型補完: \code(`\foo`); : C-c C-m} <
+    +p {
+      maketitle型補完は \code(`\foo`); の形式の入力の補完に用います。 \code(`\maketitle`); や \code(`\newpage`); などの例があります。section型補完やbegin型補完と比べると使用頻度は少ないですが、 \code(`C-c C-s`); の代わりに \code(`C-c C-m`); を打つことで、概ねsection型補完と同様に使うことができます。
+    }
+    >
+    +subsubsection{数式記号・ギリシャ文字補完} <
+    +p {
+      数式中で \code(`;`); や \code(`:`); を打つことでそれぞれ数式記号やギリシャ文字を補完することができます。特に数式記号については数式記号の形に即した入力で補完することができ、例えば \code(`;`); に続けて \code(`o`); を打つと \code(`\circ`); が、 \code(`oo`); を打つと \code(`\infty=が、 =x`); を打つと \code(`\times`); が補完されます。詳細なコマンドについては \code(`;`); や \code(`:`); に続けて \code(`<tab>`); を打つことで表示することができます。
+    }
+    >
+    >
+    +subsection ?:(`プロセス起動-c-c-c-t`) {\href(`https://www.yatex.org/~yuuji/bin/info2www.cgi?(yatexj)Invocation`){プロセス起動}: C-c C-t} <
+    +p {
+      \code(`C-c C-t`); を打つことで \code(`latex`); や \code(`bibtex`); などの組版やプレビューアのプロセスを起動することができます。詳細は\href(`https://www.yatex.org/~yuuji/bin/info2www.cgi?(yatexj)Invocation`){公式ドキュメント}にありますが、以下が良く使うと思います。
+    }
+    +listing{
+    *  \LaTeX; の起動: \code(`C-c C-t j`);
+    **  筆者は \code(`platex`); や \code(`pdflatex`); を直接呼ぶのではなく \code(`latexmk`); を呼ぶ様に設定することで、別途dvipdfmx等を呼ばずにPDFをコンパイルでき、さらにlatexmkに変更を監視させることで自動で再コンパイルされる様にしています。
+    *  PDFやdvi等のプレビュー: \code(`C-c C-t p`);
+    **  \code(`latex`); や \code(`platex`); 等でdviを生成してプレビューする場合は \code(`xdvi`); 等を起動する必要がありますが、筆者はPDFをプレビューしているので \code(`Skim`); や \code(`evince`); を起動する様に設定しています。
+    }
+    >
+    +subsection ?:(`対応する場所へのカーソルジャンプ-c-c-c-g`) {対応する場所へのカーソルジャンプ: C-c C-g} <
+    +p {
+      YaTeXでは \code(`\begin{foo}...\end{foo}`); の \code(`\begin{foo}`); の部分と \code(`\end{foo}`); や \code(`\ref{foo}`); と \code(`\label{foo}`); の様に対応した部分の行き来を \code(`C-c C-g`); で行うことができます。なお、 \code(`\ref{foo}`); と \code(`\label{foo}`); のジャンプはできますが、どうやら \code(`\cref{foo}`); と \code(`\label{foo}`); のジャンプは上手く動かない様です。
+    }
+    >
+    +subsection ?:(`use-packageによる設定法`) {use-packageによる設定法} <
+    +p {
+      use-packageによるYaTeXのインストール及び設定は以下の様になります。
+    }
+    +code(`
+    (use-package yatex
+      ;; YaTeX がインストールされていない場合、package.elを使ってインストールする。
+      :ensure t
+      ;; :commands autoload するコマンドを指定
+      :commands (yatex-mode)
+      ;; :mode auto-mode-alist の設定
+      :mode (("\\.tex$" . yatex-mode)
+             ("\\.ltx$" . yatex-mode)
+             ("\\.cls$" . yatex-mode)
+             ("\\.sty$" . yatex-mode)
+             ("\\.clo$" . yatex-mode)
+             ("\\.bbl$" . yatex-mode))
+      :init
+      (setq YaTeX-inhibit-prefix-letter t)
+      ;; :config キーワードはライブラリをロードした後の設定などを記述します。
+      :config
+      (setq YaTeX-kanji-code nil)
+      (setq YaTeX-latex-message-code 'utf-8)
+      (setq YaTeX-use-\LaTeX;2e t)
+      (setq YaTeX-use-AMS-\LaTeX; t)
+      (setq tex-command "/Library/\TeX;/texbin/latexmk -pdf -pvc -view=none")
+      (setq tex-pdfview-command "/usr/bin/open -a Skim")
+      (auto-fill-mode 0)
+      ;; company-ispellによる補完。companyについては後述
+      (set (make-local-variable 'company-backends) '(company-ispell)))
+    `);
+    >
+    >
+    >
+>
 
 end

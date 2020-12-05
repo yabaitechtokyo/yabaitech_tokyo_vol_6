@@ -1,0 +1,32 @@
+@require: itemize
+@require: code
+@require: base/image
+@require: pervasives
+
+@require: class-yabaitech/yabaitech
+
+@import: local
+
+module MasWag : sig
+
+  val article : block-text
+
+end = struct
+
+let bibliography = []
+
+let article = '<
+    +chapter ?:(`maswag-article`)
+    (|
+        bibliography = bibliography;
+        title = {$title$};
+        author = {$author$};
+        title-for-toc = Option.none;
+        subtitle = Option.none;
+    |)
+    <
+    $body$
+    >
+>
+
+end
