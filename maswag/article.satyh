@@ -327,6 +327,52 @@ let article = '<
     `);
     >
     >
+    +section ?:(`flyspell-リアルタイムスペルチェッカ`) {\href(`https://www.emacswiki.org/emacs/FlySpell`){FlySpell}: リアルタイムスペルチェッカ} <
+    +p {
+      Ispellでは対話的なスペルチェックを行うことができますが、FlySpellを使うことで他の多くのテキストエディタと同様にリアルタイムのスペルチェックも行うことができます。筆者は試したことがないですが、多分ispellかaspellがシステムにインストールされていないと動かないと思います。
+    }
+    +subsection ?:(`use-packageによる設定法-4`) {use-packageによる設定法} <
+    +p {
+      use-packageによるFlySpellの設定は以下の様になります。
+    }
+    +code(`
+    (use-package flyspell
+      ;; flyspellをインストールする
+      :ensure t
+      ;; YaTeXモードでflyspellを使う
+      :hook (yatex-mode . flyspell-mode))
+    `);
+    >
+    >
+    +section ?:(`ace-jump-mode-カーソルジャンプ用マイナーモード`) {\href(`https://github.com/winterTTr/ace-jump-mode`){Ace Jump Mode}: カーソルジャンプ用マイナーモード} <
+    +p {
+      \href(`https://github.com/winterTTr/ace-jump-mode`){Ace Jump Mode}を使うことでバッファ中の「任意の場所」に一瞬でジャンプできる様になります。「任意の場所」というのは具体的には: 1) 単語の先頭の文字、2)単語の先頭以外も含む文字、3) 行のどれかになります。これらを数タイプで指定することでジャンプできるため、カーソル移動の時間がかなり短かくなります。但し英文を書いている場合は結構本当に2ストロークで画面中のほぼ全ての場所に移動できますが、日本語を書いている場合は文字指定に難があるので、画面中のほぼ全ての「行」に飛べるくらいが本当のところになります。
+    英文を書く場合には、単語の先頭以外も含む文字だと候補が多くなりすぎて必要なタイプ数が増えてしますので、単語の先頭の文字を指定するのが使い勝手が良いです。
+    }
+    +subsection ?:(`使い方`) {使い方} <
+    +p {
+      Ace Jump Modeでは、以下のコマンドに続いて飛びたい先の文字を入力すると、その文字に指定するための文字が表示されるので、その文字を入力して位置を指定することでジャンプすることができます。なお行指定については最初から各行に文字が表示されるのでそれらの文字を入力することで行を指定することができます。
+    }
+    +listing{
+    *  単語の先頭の文字: \code(`C-c j [key]`);: (または \code(`M-x ace-jump-word-mode`);)
+    *  単語の先頭以外も含む文字: \code(`C-u C-c j [key]`); : (または \code(`M-x ace-jump-char-mode`);)
+    *  行: \code(`C-u C-u C-c j [key]`); : (または \code(`M-x ace-jump-line-mode`);)
+    }
+    +p {
+      前述の様に英語の文書を書く場合は \code(`C-c j`); の単語先頭の文字指定が重宝します。一方で日本語の場合文字指定が大変なので \code(`C-u C-u C-c j`); の行指定によるジャンプが重宝します。
+    }
+    >
+    +subsection ?:(`use-packageによる設定法-5`) {use-packageによる設定法} <
+    +p {
+      use-packageによるAce Jump Mode設定は以下の様になります。ここでは \code(`C-c j`); で \code(`ace-jump-mode`); を呼び出す様に設定していますが、他のキーバインドが良い場合は適宜設定してください。
+    }
+    +code(`
+    (use-package ace-jump-mode
+      :ensure t
+      :bind (("C-c j" . ace-jump-mode)))
+    `);
+    >
+    >
     >
 >
 
