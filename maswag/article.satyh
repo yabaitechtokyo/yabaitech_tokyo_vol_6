@@ -86,7 +86,7 @@ let article = '<
       本記事の内容はGUI版のGNU Emacs 27で動作確認を行っています。古い版のEmacsでは動かないものもあるかもしれませんし、Spacemacs等での動作確認も行っていません。また、mac OSとLinuxで動作確認をしていますが、Windowsでは(持ってないので)動作確認を行っていません。
     }
     +p {
-      また、本記事の内容は後日別途無償公開する可能性が多いにあります。また、本記事で紹介している設定を纏めた \code(`init.el`); は hogehogefugafugaからダウンロードできます。
+      また、本記事の内容は後日別途無償公開する可能性が多いにあります。また、本記事で紹介している設定を纏めた \code(`init.el`); は \href(`https://gist.github.com/MasWag/35bf58e27b36dc3f45263d7c247ca418`){https://gist.github.com/MasWag/35bf58e27b36dc3f45263d7c247ca418} からダウンロードできます。
     }
     >
     +section ?:(`下ごしらえ`) {下ごしらえ} <
@@ -300,8 +300,10 @@ let article = '<
       :bind (:map company-search-map
                   ("C-n" . company-select-next)
                   ("C-p" . company-select-previous)))
-    (use-package company-tabnine :ensure t)
-    (add-to-list 'company-backends #'company-tabnine)
+    (use-package company-tabnine 
+      :ensure t
+      :config
+      (add-to-list 'company-backends #'company-tabnine))
     `);
     >
     >
@@ -323,7 +325,7 @@ let article = '<
     (use-package ispell
       :init
       ;; スペルチェッカとしてaspellを使う
-      (setq ispell-program-name "aspell")
+      (setq ispell-program-name "/usr/local/bin/aspell")
       :config
       ;; 日本語の部分を飛ばす
       (add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
