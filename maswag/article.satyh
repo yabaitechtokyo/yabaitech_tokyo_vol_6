@@ -302,6 +302,31 @@ let article = '<
     `);
     >
     >
+    +section ?:(`ispell-対話的スペルチェック`) {Ispell: 対話的スペルチェック} <
+    +p {
+      Emacsでは対話的なスペルチェックを行うこともできます。古典的にはIspellが使われていたために、Emacsでは対話的スペルチェックのコマンドもIspellと呼ばれていますが、現代では後継のAspellやHunspellが主流となっています。
+    }
+    +subsection ?:(`ispellの使い方`) {Ispellの使い方} <
+    +p {
+      Ispellには幾つかの使い方がありますが、 \code(`M-x ispell`); で \code(`ispell`); を呼ぶのが基本的な使い方です。 ispellはスペルチェックの結果辞書にない単語を見つけると、置換候補を画面上方に表示するので、選択すると置き換えられます。無視したい場合は \code(`<SPC>`); を入力します。それ以外にも当該バッファのみの辞書に追加する等も可能なので、詳細な使い方は置換対象の選択画面で \code(`C-h`); か \code(`?`); を入力して確認してください。
+    \code(`M-x ispell`); では基本的にバッファ全体に対してスペルチェックを行いますが、リージョンがアクティブな場合はアクティブなリジョンに対してのみスペルチェックを行います。また、1単語に対してスペルチェックを行いたい場合は \code(`M-$`); を打ちます。
+    }
+    >
+    +subsection ?:(`use-packageによる設定法-3`) {use-packageによる設定法} <
+    +p {
+      use-packageによるispellの設定は以下の様になります。ispellはEmacsに同梱されているので別途インストールせずに使うことができます。ここではスペルチェッカとしてaspellを使う設定をしているので、システムにインストールされていない場合は別途aspellのインストールも必要です。
+    }
+    +code(`
+    (use-package ispell
+      :init
+      ;; スペルチェッカとしてaspellを使う
+      (setq ispell-program-name "aspell")
+      :config
+      ;; 日本語の部分を飛ばす
+      (add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
+    `);
+    >
+    >
     >
 >
 

@@ -243,11 +243,35 @@ use-packageによるcompany-mode及びcompany-tabnineの設定は以下の様に
   (add-to-list 'company-backends #'company-tabnine)
 #+END_SRC
     
-* TODO COMMENT FlySpell
+* Ispell: 対話的スペルチェック
 
-** https://www.emacswiki.org/emacs/FlySpell
+Emacsでは対話的なスペルチェックを行うこともできます。古典的にはIspellが使われていたために、Emacsでは対話的スペルチェックのコマンドもIspellと呼ばれていますが、現代では後継のAspellやHunspellが主流となっています。
+
+** Ispellの使い方
+
+Ispellには幾つかの使い方がありますが、 =M-x ispell= で =ispell= を呼ぶのが基本的な使い方です。 ispellはスペルチェックの結果辞書にない単語を見つけると、置換候補を画面上方に表示するので、選択すると置き換えられます。無視したい場合は =<SPC>= を入力します。それ以外にも当該バッファのみの辞書に追加する等も可能なので、詳細な使い方は置換対象の選択画面で =C-h= か =?= を入力して確認してください。
+ =M-x ispell= では基本的にバッファ全体に対してスペルチェックを行いますが、リージョンがアクティブな場合はアクティブなリジョンに対してのみスペルチェックを行います。また、1単語に対してスペルチェックを行いたい場合は =M-$= を打ちます。
+
+** use-packageによる設定法
+
+use-packageによるispellの設定は以下の様になります。ispellはEmacsに同梱されているので別途インストールせずに使うことができます。ここではスペルチェッカとしてaspellを使う設定をしているので、システムにインストールされていない場合は別途aspellのインストールも必要です。
+
+#+NAME: ISPELL
+#+BEGIN_SRC elisp
+  (use-package ispell
+    :init
+    ;; スペルチェッカとしてaspellを使う
+    (setq ispell-program-name "aspell")
+    :config
+    ;; 日本語の部分を飛ばす
+    (add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
+#+END_SRC
+
+* TODO COMMENT [[https://www.emacswiki.org/emacs/FlySpell][FlySpell]]: リアルタイムスペルチェッカ
 
 ** onlineのspell checker
+
+** 多分ispell or aspellがないと動かない
 
 ** use-packageによる設定法
 
@@ -356,7 +380,7 @@ e)
 <<REFTEX>>
 <<BIBLIO>>
 <<FLYCHECK>>
+<<ISPELL>>
 <<FLYSPELL>>
 <<ACE_JUMP>>
-#+END_SRC    
-
+#+END_SRC
