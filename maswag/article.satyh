@@ -402,6 +402,36 @@ let article = '<
     }
     >
     >
+    +section ?:(`flycheck-emacsの構文チェッカ`) {\href(`https://www.flycheck.org/en/latest/`){Flycheck}: Emacsの構文チェッカ} <
+    +p {
+      FlycheckはEmacsの構文チェッカです。プログラムを書く際は型チェックを通したりlintに構文を確認させたりするために使いますが、ここでは\href(`https://www.nongnu.org/chktex/`){chktex}や\href(`https://ctan.org/pkg/lacheck`){lacheck}など(La)\TeX;用のlintの設定を紹介します。
+    正直なところFlycheckが無くてもあまり困ることはありませんが、たまに括弧対応などの有益な指摘をしてくれることがあります。一方で数式中で半開区間が表われた場合の様に意図して括弧を対応させていない場合にもlintが指摘するため、lintの結果の扱いには注意が必要です。
+    }
+    +subsection ?:(`使い方-1`) {使い方} <
+    +p {
+      以下の設定を行った場合、 \code(`M-n`); や \code(`M-p`); で前後のエラー箇所にジャンプすることができます。また、エラー上にカーソルがある場合、エラーの説明文が表示されます。
+    }
+    +listing{
+    *  \code(`M-n`); (\code(`flycheck-next-error`);): 直後のエラー箇所にジャンプ
+    *  \code(`M-p`); (\code(`flycheck-previous-error`);): 直前のエラー箇所にジャンプ
+    }
+    >
+    +subsection ?:(`use-packageによる設定法-6`) {use-packageによる設定法} <
+    +code(`
+    (use-package flycheck
+      :ensure t
+      :hook (after-init . global-flycheck-mode)
+      :config
+      (flycheck-add-mode 'tex-chktex 'yatex-mode)
+      (flycheck-add-mode 'tex-lacheck 'yatex-mode)
+      ;; chktexが自動で見付からない場合は以下の様に指定する。lacheckについても同様
+      (setq flycheck-tex-chktex-executable "/Library/TeX/texbin/chktex")
+      :bind (:map flycheck-mode-map
+                ("M-n" . flycheck-next-error)
+                ("M-p" . flycheck-previous-error)))
+    `);
+    >
+    >
     >
 >
 
