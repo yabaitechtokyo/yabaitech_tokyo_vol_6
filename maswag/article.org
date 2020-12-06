@@ -14,7 +14,9 @@
 #+end_quote
 
 時は200X年、*nix業界ではvi/VimとEmacs系というテキストエディタ界の二大巨塔で争う、エディタ戦争というエクストリームスポーツがあった\footnote{2000年代にはまだAtomもVSCodeもなく、やっと2008年にSublime Textが登場した頃なのであった}。
-viは遥か遠い昔にedというラインエディタから派生して登場したスクリーンエディタでVimはそのviの派生、Emacs系のテキストエディタというのはこれまた遥か遠い昔にTECOというラインエディタと関係して生まれたスクリーンエディタであるオリジナルのEmacsやその代替のエディタであり、vi/VimとEmacs系エディタの両者の派閥が云々…という話は本記事の本題ではないのでこれ以上深追いしないでおきます。
+viは遥か遠い昔にedというラインエディタから派生して登場したスクリーンエディタでVimはそのviの派生、Emacs系のテキストエディタというのはこれまた遥か遠い昔にTECOというラインエディタと関係して生まれたスクリーンエディタであるオリジナルのEmacsやその代替のエディタであり、vi/VimとEmacs系エディタの両者の派閥が云々…
+
+という話は本記事の本題ではないのでこれ以上深追いしないでおきます。
 本来単にEmacsと書いた場合GNU Emacs以外にも例えばMicroEMACSなどを含むEmacs系のエディタ全般を指しますが、本記事ではGNU Emacs以外の話はしないので、以下GNU Emacsのことを単にEmacsと書きます。
 \footnote{というのは変な突っ込みが入らないための単なるおまじないであり、今時Emacsと言われてGNU Emacs以外のエディタの事を考える人はほぼいないでしょう}
 GNU EmacsはEmacs LispというLisp方言で拡張を行うことができ様々な拡張機能が実装されてはいるものの、  筆者を含めEmacs LispやEmacsの拡張機能のエコシステムに詳しくない人にはなかなか取っ付き辛いです。
@@ -239,8 +241,10 @@ use-packageによるcompany-mode及びcompany-tabnineの設定は以下の様に
     :bind (:map company-search-map
                 ("C-n" . company-select-next)
                 ("C-p" . company-select-previous)))
-  (use-package company-tabnine :ensure t)
-  (add-to-list 'company-backends #'company-tabnine)
+  (use-package company-tabnine 
+    :ensure t
+    :init
+    (add-to-list 'company-backends #'company-tabnine))
 #+END_SRC
     
 * Ispell: 対話的スペルチェック
