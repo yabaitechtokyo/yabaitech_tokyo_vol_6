@@ -373,6 +373,35 @@ let article = '<
     `);
     >
     >
+    +section ?:(`position-registers-多分無名な標準機能`) {\href(`https://ayatakesi.github.io/emacs/25.1/Position-Registers.html`){Position Registers}: 多分無名な標準機能} <
+    +p {
+      Emacsには標準の機能として\href(`https://ayatakesi.github.io/emacs/25.1/Registers.html`){レジスター}があります。レジスターを使うことで、各文字 (数字や英字)に一つ、テキストやウインドウの設定などを一時的に保存できます。ここでは特にレジスターにバッファ上の位置を保存すること使い方を紹介します。
+    }
+    +p {
+      レジスターではバッファ上の位置を上手く記憶することができるので、例えば次の様な使い方ができます。
+    }
+    +enumerate{
+    *  \LaTeX;文章を書いている途中でプリアンブルを編集したくなる
+    *  現在編集している場所をレジスターに保存する
+    *  適宜プリアンブルを編集する
+    *  レジスターに保存されている場所に戻る
+    }
+    +p {
+      また、EmacsのPosition Registersではバッファ上の位置を保存して、別のバッファからでも移動することができます。そのため例えば書誌情報を編集するために.bibファイルを編集した後でメインの文書ファイルの特定位置に戻る、といった使い方もできます。
+    }
+    +p {
+      なお、Position RegistersはEmacsの標準機能なので特に設定を行う必要はありません。
+    }
+    +subsection ?:(`position-registersの使い方`) {Position Registersの使い方} <
+    +p {
+      Position registerの使い方は以下の様にとてもシンプルです。
+    }
+    +listing{
+    *  \code(`C-x r SPC [レジスター]`); で指定したレジスターに現在位置を記録
+    *  \code(`C-x r j [レジスター]`); でレジスターに記録されている位置にジャンプ
+    }
+    >
+    >
     >
 >
 
