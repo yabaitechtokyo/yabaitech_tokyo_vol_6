@@ -6,6 +6,7 @@
 @require: class-yabaitech/yabaitech
 
 @import: local
+@import: bib
 
 module MasWag : sig
 
@@ -13,12 +14,10 @@ module MasWag : sig
 
 end = struct
 
-let bibliography = []
-
 let article = '<
     +chapter ?:(`maswag-article`)
     (|
-        bibliography = bibliography;
+        bibliography = maswag-bibliography;
         title = {$title$};
         author = {$author$};
         title-for-toc = Option.none;

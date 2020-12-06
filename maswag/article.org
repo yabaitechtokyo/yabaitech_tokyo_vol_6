@@ -43,10 +43,10 @@ SATySFiという型も付いていて比較的全うな組版処理システム�
 
 * おことわり
 
-本記事ではLaTeX及びBiBTeXというものを聞いたことがあったり、最低限の使い方を知っていることを前提にしています。これらの使い方がわからない場合はTeX Wikiの[[https://texwiki.texjp.org/?LaTeX%E5%85%A5%E9%96%80][LaTeX入門]]の記事等を参考にしてください。
+本記事ではLaTeX及びBiBTeXというものを聞いたことがあったり、最低限の使い方を知っていることを前提にしています。これらの使い方がわからない場合はTeX Wikiの[[https://texwiki.texjp.org/?LaTeX%E5%85%A5%E9%96%80][LaTeX入門]]\cite{LaTeX入門}の記事等を参考にしてください。
 
 また、本記事ではEmacs Lispの細かい言語機能などの知識は仮定しませんが\footnote{そもそも筆者自身もがEmacs Lispの詳細をわかっていないです}、Emacsの使い方を最低限理解していることは前提としています。
-例えばメジャーモードとマイナーモード等の用語や、 =M-x= や =C-c= などの良くEmacsの説明で使う表記は前置きなく使います。Emacsの初心者向けの説明は、例えば Emacs JP にある[[https://emacs-jp.github.io/tips/emacs-in-2020][入門記事]]を参照してください。
+例えばメジャーモードとマイナーモード等の用語や、 =M-x= や =C-c= などの良くEmacsの説明で使う表記は前置きなく使います。Emacsの初心者向けの説明は、例えば Emacs JP にある[[https://emacs-jp.github.io/tips/emacs-in-2020][入門記事]]\cite{2020年代のEmacs入門}を参照してください。
 
 本記事の内容はGUI版のGNU Emacs 27で動作確認を行っています。古い版のEmacsでは動かないものもあるかもしれませんし、Spacemacs等での動作確認も行っていません。また、mac OSとLinuxで動作確認をしていますが、Windowsでは(持ってないので)動作確認を行っていません。
 
@@ -56,7 +56,7 @@ SATySFiという型も付いていて比較的全うな組版処理システム�
 
 ** =package.el=
 
-Emacsのパッケージのインストールは[[https://emacs-jp.github.io/packages/package][package.el]]を使います。package.elはEmacs 24以降では標準搭載されているパッケージ管理ツールです。一応Emacs 23でも自分でインストールすることでpackage.elを使うことは可能ですが、特殊な事情がある場合を除いて新しいEmacsを使う方が良いと思います。
+Emacsのパッケージのインストールは[[https://emacs-jp.github.io/packages/package][package.el]]\cite{package.el}を使います。package.elはEmacs 24以降では標準搭載されているパッケージ管理ツールです。一応Emacs 23でも自分でインストールすることでpackage.elを使うことは可能ですが、特殊な事情がある場合を除いて新しいEmacsを使う方が良いと思います。
 
 Emacs 24以降向けのpackage.elの設定方法は以下の様になります。
 
@@ -71,7 +71,7 @@ Emacs 24以降向けのpackage.elの設定方法は以下の様になります�
 
 ** =use-package=
 
-Emacsのパッケージの設定には[[https://github.com/jwiegley/use-package][use-package]]を使います。(use-packageの登場以前の様に) =(require ...)= =(autoload ...)= の様な生のEmacs Lispを使って設定をすることも可能ですが、use-packageを使うとマクロを使ってより簡潔に設定を書くことができます。\footnote{筆者はまだ使ったことがないですが、今時はuse-packageではなく [[https://github.com/conao3/leaf.el][leaf.el]] の方が良いかもしれないです。この様に流行のパッケージが移り変るのも最適にEmacsを設定することを難しくしています。}
+Emacsのパッケージの設定には[[https://github.com/jwiegley/use-package][use-package]]\cite{use-package}を使います。(use-packageの登場以前の様に) =(require ...)= =(autoload ...)= の様な生のEmacs Lispを使って設定をすることも可能ですが、use-packageを使うとマクロを使ってより簡潔に設定を書くことができます。\footnote{筆者はまだ使ったことがないですが、今時はuse-packageではなく [[https://github.com/conao3/leaf.el][leaf.el]] の方が良いかもしれないです。この様に流行のパッケージが移り変るのも最適にEmacsを設定することを難しくしています。}
 
 use-packageのインストール及び設定方法は以下の様になります。
 
@@ -83,11 +83,11 @@ use-packageのインストール及び設定方法は以下の様になります
 
 * YaTeX (野鳥): 筆者おすすめのLaTeX用メジャーモード
 
-[[https://www.yatex.org/][YaTeX]] (Yet Another TeX mode for Emacs、野鳥)は筆者が長年使っているLaTeX用のメジャーモードです。Emacsには標準でTeX modeも搭載されていますが、YaTeXの方がより高機能です。YaTeXと並んでAUCTeXも人気があるLaTeX用メジャーモードの様ですが、筆者は使ったことがありません。
+[[https://www.yatex.org/][YaTeX]] \cite{YaTeX}(Yet Another TeX mode for Emacs、野鳥)は筆者が長年使っているLaTeX用のメジャーモードです。Emacsには標準でTeX modeも搭載されていますが、YaTeXの方がより高機能です。YaTeXと並んでAUCTeXも人気があるLaTeX用メジャーモードの様ですが、筆者は使ったことがありません。
 
 ** 補完
 
-YaTeXは様々な場面でLaTeXのコマンドを補完することができます。詳細は[[https://www.yatex.org/~yuuji/bin/info2www.cgi?(yatexj)Completion][公式ドキュメント]]にありますが、以下ではその中でも特に良く使うものを紹介していきます。
+YaTeXは様々な場面でLaTeXのコマンドを補完することができます。詳細は[[https://www.yatex.org/~yuuji/bin/info2www.cgi?(yatexj)Completion][公式ドキュメント]]\cite{YaTeX-completion}にありますが、以下ではその中でも特に良く使うものを紹介していきます。
 
 *** section型補完: =\foo{...}=: C-c C-s
 
@@ -113,7 +113,7 @@ maketitle型補完は =\foo= の形式の入力の補完に用います。 =\mak
 
 ** [[https://www.yatex.org/~yuuji/bin/info2www.cgi?(yatexj)Invocation][プロセス起動]]: C-c C-t
 
-=C-c C-t= を打つことで =latex= や =bibtex= などの組版やプレビューアのプロセスを起動することができます。詳細は[[https://www.yatex.org/~yuuji/bin/info2www.cgi?(yatexj)Invocation][公式ドキュメント]]にありますが、以下が良く使うと思います。
+=C-c C-t= を打つことで =latex= や =bibtex= などの組版やプレビューアのプロセスを起動することができます。詳細は[[https://www.yatex.org/~yuuji/bin/info2www.cgi?(yatexj)Invocation][公式ドキュメント]] \cite{YaTeX-invocation}にありますが、以下が良く使うと思います。
 
 - LaTeX の起動: =C-c C-t j=
   - 筆者は =platex= や =pdflatex= を直接呼ぶのではなく =latexmk= を呼ぶ様に設定することで、別途dvipdfmx等を呼ばずにPDFをコンパイルでき、さらにlatexmkに変更を監視させることで自動で再コンパイルされる様にしています。
@@ -159,10 +159,10 @@ use-packageによるYaTeXのインストール及び設定は以下の様にな�
 
 * RefTeX: 参照挿入のためのマイナーモード
 
-[[https://www.gnu.org/software/auctex/reftex.html][RefTeX]]は =\ref{...}= / =\cref{...}= \footnote{ちなみにcleverefパッケージを使うことで cref を使った賢い相互参照ができます。}
+[[https://www.gnu.org/software/auctex/reftex.html][RefTeX]]\cite{RefTeX}は =\ref{...}= / =\cref{...}= \footnote{ちなみにcleverefパッケージを使うことで cref を使った賢い相互参照ができます。}
 や =\cite{...}= といった参照関係のコマンドを検索して挿入するためのマイナーモードです。個人的な経験としては、複数のファイルに分割して文書を書く場合に検索に失敗することがありますが、単一ファイルで文章を書く際は概ね問題なく動いている様です。
 
-以下のコマンドを良く使います。詳細は[[https://www.gnu.org/software/auctex/manual/reftex.index.html][公式マニュアル]]を参照してください。
+以下のコマンドを良く使います。詳細は[[https://www.gnu.org/software/auctex/manual/reftex.index.html][公式マニュアル]]\cite{RefTeX-manual}を参照してください。
 
 - =\ref{...}= / =\cref{...}= の挿入: =C-c (=
 - =\cite{...}= の挿入: =C-c [=
@@ -189,7 +189,7 @@ use-packageによるRefTeXの設定は以下の様になります。RefTeXはEma
 
 * [[https://github.com/cpitclaudel/biblio.el][biblio.el]]: 書誌情報のWeb検索機能
 
-  [[https://github.com/cpitclaudel/biblio.el][biblio.el]]を使うことで書誌情報をWeb上で検索して、例えば[[https://ja.wikipedia.org/wiki/BibTeX][BibTeX]]のエントリーをダウンロードしてファイルに挿入することや =kill-ring= にコピーすることができます。それ以外にも (個人的にはほぼ使いませんが) 検索結果の画面をブラウザで開くこともできます。検索サイトとしてarXiv、CrossRef、DBLP、HAL、IEEE Exploreに対応している様ですが、個人的には専らDBLPを使っています。
+  [[https://github.com/cpitclaudel/biblio.el][biblio.el]]\cite{biblio.el}を使うことで書誌情報をWeb上で検索して、例えば[[http://www.bibtex.org/][BibTeX]]\cite{bibtex}のエントリーをダウンロードしてファイルに挿入することや =kill-ring= にコピーすることができます。それ以外にも (個人的にはほぼ使いませんが) 検索結果の画面をブラウザで開くこともできます。検索サイトとしてarXiv、CrossRef、DBLP、HAL、IEEE Exploreに対応している様ですが、個人的には専らDBLPを使っています。
 
 ** 個人的に良く使う使い方
 
@@ -211,7 +211,7 @@ biblio.elは特別な設定をしなくても動くので、個人的には use-
 
 * company-mode: 補完用マイナーモード
 
-company-modeはEmacsの補完用マイナーモードです。IDEによく付いてくる補完機能と同じ様なものだと思って差し支えないでしょう。一昔前はauto-complteが良く使われていましたが、現在はcompany-modeの方が良く使われている様です。
+company-mode\cite{company}はEmacsの補完用マイナーモードです。IDEによく付いてくる補完機能と同じ様なものだと思って差し支えないでしょう。一昔前はauto-complteが良く使われていましたが、現在はcompany-modeの方が良く使われている様です。
 
 プログラムを書く場合に補完するのは変数名や関数名ですが、LaTeXの文章を書く場合には主に英単語を補完したいです。英単語の補完方法には幾つかありますが、ここではTabNineという人工知能による補完を =company-tabnine= を使います\footnote{ TabNineを使った補完以外にも、より以前から使われてきたスペルチェッカーの辞書を使った補完 (company-ispell)も良く動きます。}。
 
@@ -249,7 +249,7 @@ use-packageによるcompany-mode及びcompany-tabnineの設定は以下の様に
     
 * Ispell: 対話的スペルチェック
 
-Emacsでは対話的なスペルチェックを行うこともできます。古典的にはIspellが使われていたために、Emacsでは対話的スペルチェックのコマンドもIspellと呼ばれていますが、現代では後継のAspellやHunspellが主流となっています。
+Emacsでは対話的なスペルチェック\cite{ispell}を行うこともできます。古典的にはIspellが使われていたために、Emacsでは対話的スペルチェックのコマンドもIspellと呼ばれていますが、現代では後継のAspellやHunspellが主流となっています。
 
 ** Ispellの使い方
 
@@ -273,7 +273,7 @@ use-packageによるispellの設定は以下の様になります。ispellはEma
 
 * [[https://www.emacswiki.org/emacs/FlySpell][FlySpell]]: リアルタイムスペルチェッカ
 
-Ispellでは対話的なスペルチェックを行うことができますが、FlySpellを使うことで他の多くのテキストエディタと同様にリアルタイムのスペルチェックも行うことができます。筆者は試したことがないですが、多分ispellかaspellがシステムにインストールされていないと動かないと思います。
+Ispellでは対話的なスペルチェックを行うことができますが、FlySpell\cite{flyspell}を使うことで他の多くのテキストエディタと同様にリアルタイムのスペルチェックも行うことができます。筆者は試したことがないですが、多分ispellかaspellがシステムにインストールされていないと動かないと思います。
 
 ** use-packageによる設定法
 
@@ -290,7 +290,7 @@ use-packageによるFlySpellの設定は以下の様になります。
 
 * [[https://github.com/winterTTr/ace-jump-mode][Ace Jump Mode]]: カーソルジャンプ用マイナーモード
 
-[[https://github.com/winterTTr/ace-jump-mode][Ace Jump Mode]]を使うことでバッファ中の「任意の場所」に一瞬でジャンプできる様になります。「任意の場所」というのは具体的には: 1) 単語の先頭の文字、2)単語の先頭以外も含む文字、3) 行のどれかになります。これらを数タイプで指定することでジャンプできるため、カーソル移動の時間がかなり短かくなります。但し英文を書いている場合は結構本当に2ストロークで画面中のほぼ全ての場所に移動できますが、日本語を書いている場合は文字指定に難があるので、画面中のほぼ全ての「行」に飛べるくらいが本当のところになります。
+[[https://github.com/winterTTr/ace-jump-mode][Ace Jump Mode]] \cite{ace-jump-mode}を使うことでバッファ中の「任意の場所」に一瞬でジャンプできる様になります。「任意の場所」というのは具体的には: 1) 単語の先頭の文字、2)単語の先頭以外も含む文字、3) 行のどれかになります。これらを数タイプで指定することでジャンプできるため、カーソル移動の時間がかなり短かくなります。但し英文を書いている場合は結構本当に2ストロークで画面中のほぼ全ての場所に移動できますが、日本語を書いている場合は文字指定に難があるので、画面中のほぼ全ての「行」に飛べるくらいが本当のところになります。
 英文を書く場合には、単語の先頭以外も含む文字だと候補が多くなりすぎて必要なタイプ数が増えてしますので、単語の先頭の文字を指定するのが使い勝手が良いです。
 
 ** 使い方
@@ -316,7 +316,7 @@ use-packageによるAce Jump Mode設定は以下の様になります。ここ�
 
 * [[https://ayatakesi.github.io/emacs/25.1/Position-Registers.html][Position Registers]]: 多分無名な標準機能
 
-Emacsには標準の機能として[[https://ayatakesi.github.io/emacs/25.1/Registers.html][レジスター]]があります。レジスターを使うことで、各文字 (数字や英字)に一つ、テキストやウインドウの設定などを一時的に保存できます。ここでは特にレジスターにバッファ上の位置を保存すること使い方を紹介します。
+Emacsには標準の機能として[[https://ayatakesi.github.io/emacs/25.1/Registers.html][レジスター]]\cite{register}があります。レジスターを使うことで、各文字 (数字や英字)に一つ、テキストやウインドウの設定などを一時的に保存できます。ここでは特にレジスターにバッファ上の位置を保存すること使い方を紹介します。
 
 レジスターではバッファ上の位置を上手く記憶することができるので、例えば次の様な使い方ができます。
 
@@ -339,7 +339,7 @@ Position registerの使い方は以下の様にとてもシンプルです。
 
 * [[https://www.flycheck.org/en/latest/][Flycheck]]: Emacsの構文チェッカ
 
-FlycheckはEmacsの構文チェッカです。プログラムを書く際は型チェックを通したりlintに構文を確認させたりするために使いますが、ここでは[[https://www.nongnu.org/chktex/][chktex]]や[[https://ctan.org/pkg/lacheck][lacheck]]など(La)TeX用のlintの設定を紹介します。
+Flycheck\ref{flycheck}はEmacsの構文チェッカです。プログラムを書く際は型チェックを通したりlintに構文を確認させたりするために使いますが、ここでは[[https://www.nongnu.org/chktex/][chktex]]や[[https://ctan.org/pkg/lacheck][lacheck]]など(La)TeX用のlintの設定を紹介します。
 正直なところFlycheckが無くてもあまり困ることはありませんが、たまに括弧対応などの有益な指摘をしてくれることがあります。一方で数式中で半開区間が表われた場合の様に意図して括弧を対応させていない場合にもlintが指摘するため、lintの結果の扱いには注意が必要です。
 
 ** 使い方
