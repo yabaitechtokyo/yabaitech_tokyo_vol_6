@@ -79,7 +79,7 @@ use-packageのインストール及び設定方法は以下の様になります
   (require 'use-package)
 #+END_SRC
 
-* YaTeX: 筆者おすすめのLaTeX用メジャーモード
+* YaTeX (野鳥): 筆者おすすめのLaTeX用メジャーモード
 
 [[https://www.yatex.org/][YaTeX]] (Yet Another TeX mode for Emacs、野鳥)は筆者が長年使っているLaTeX用のメジャーモードです。Emacsには標準でTeX modeも搭載されていますが、YaTeXの方がより高機能です。YaTeXと並んでAUCTeXも人気があるLaTeX用メジャーモードの様ですが、筆者は使ったことがありません。
 
@@ -107,7 +107,7 @@ maketitle型補完は =\foo= の形式の入力の補完に用います。 =\mak
 
 *** 数式記号・ギリシャ文字補完
 
-数式中で =;= や =:= を打つことでそれぞれ数式記号やギリシャ文字を補完することができます。特に数式記号については数式記号の形に即した入力で補完することができ、例えば =;= に続けて =o= を打つと =\circ= が、 =oo= を打つと =\infty=が、 =x= を打つと =\times= が補完されます。詳細なコマンドについては =;= や =:= に続けて =<tab>= を打つことで表示することができます。
+数式中で =;= や =:= を打つことでそれぞれ数式記号やギリシャ文字を補完することができます。特に数式記号については数式記号の形に即した入力で補完することができ、例えば =;= に続けて =o= を打つと =\circ= が、 =oo= を打つと =\infty= が、 =x= を打つと =\times= が補完されます。詳細なコマンドについては =;= や =:= に続けて =<tab>= を打つことで表示することができます。
 
 ** [[https://www.yatex.org/~yuuji/bin/info2www.cgi?(yatexj)Invocation][プロセス起動]]: C-c C-t
 
@@ -129,7 +129,7 @@ use-packageによるYaTeXのインストール及び設定は以下の様にな�
 #+NAME: YATEX
 #+BEGIN_SRC elisp
   (use-package yatex
-    ;; YaTeX がインストールされていない場合、package.elを使ってインストールする。
+    ;; YaTeX がインストールされていない場合、package.elを使ってインストールする
     :ensure t
     ;; :commands autoload するコマンドを指定
     :commands (yatex-mode)
@@ -155,37 +155,34 @@ use-packageによるYaTeXのインストール及び設定は以下の様にな�
     (set (make-local-variable 'company-backends) '(company-ispell)))
 #+END_SRC
 
-* TODO COMMENT RefTeX
+* RefTeX: 参照挿入のためのマイナーモード
 
-** https://www.gnu.org/software/auctex/reftex.html
+[[https://www.gnu.org/software/auctex/reftex.html][RefTeX]]は =\ref{...}= / =\cref{...}= \footnote{ちなみにcleverefパッケージを使うことで cref を使った賢い相互参照ができます。}
+や =\cite{...}= といった参照関係のコマンドを検索して挿入するためのマイナーモードです。個人的な経験としては、複数のファイルに分割して文書を書く場合に検索に失敗することがありますが、単一ファイルで文章を書く際は概ね問題なく動いている様です。
 
-** ref/crefやciteを自動で検索して挿入できる
+以下のコマンドを良く使います。詳細は[[https://www.gnu.org/software/auctex/manual/reftex.index.html][公式マニュアル]]を参照してください。
 
-** 元々はAUCTeXの一部だった模様
-
-** Emacs 24.3以降ではEmacsに同梱されているので別途インストールする必要はない
-
-** 良く使うコマンド一覧
-
-*** ref/cref: C-c (
-
-*** cite: C-c [
+- =\ref{...}= / =\cref{...}= の挿入: =C-c (=
+- =\cite{...}= の挿入: =C-c [=
 
 ** use-packageによる設定法
 
+use-packageによるRefTeXの設定は以下の様になります。RefTeXはEmacs 24.3以降ではEmacsに同梱されているので別途インストールせずに使うことができます。
+
 #+NAME: REFTEX
 #+BEGIN_SRC elisp
-(use-package reftex
-  :ensure nil
-  :hook (yatex-mode . reftex-mode)
-  :bind (:map reftex-mode-map
-              ("C-c (" . reftex-reference)
-              ("C-c )" . nil)
-              ("C-c >" . YaTeX-comment-region)
-              ("C-c <" . YaTeX-uncomment-region))
-  :defer t
-  :custom
-  (reftex-ref-style-default-list '("Cleveref") "Use cref/Cref as default"))
+  (use-package reftex
+    :ensure nil
+    :hook (yatex-mode . reftex-mode)
+    :bind (:map reftex-mode-map
+                ("C-c (" . reftex-reference)
+                ("C-c )" . nil)
+                ("C-c >" . YaTeX-comment-region)
+                ("C-c <" . YaTeX-uncomment-region))
+    :defer t
+    :custom
+    ;; \ref ではなく \cref を使うための設定
+    (reftex-ref-style-default-list '("Cleveref") "Use cref/Cref as default"))
 #+END_SRC
 
 * TODO COMMENT [[https://github.com/cpitclaudel/biblio.el][biblio.el]]

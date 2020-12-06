@@ -117,7 +117,7 @@ let article = '<
     `);
     >
     >
-    +section ?:(`yatex-筆者おすすめのlatex用メジャーモード`) {YaTeX: 筆者おすすめの\LaTeX;用メジャーモード} <
+    +section ?:(`yatex-野鳥-筆者おすすめのlatex用メジャーモード`) {YaTeX (野鳥): 筆者おすすめの\LaTeX;用メジャーモード} <
     +p {
       \href(`https://www.yatex.org/`){YaTeX} (Yet Another \TeX; mode for Emacs、野鳥)は筆者が長年使っている\LaTeX;用のメジャーモードです。Emacsには標準で\TeX; modeも搭載されていますが、YaTeXの方がより高機能です。YaTeXと並んでAUC\TeX;も人気がある\LaTeX;用メジャーモードの様ですが、筆者は使ったことがありません。
     }
@@ -152,7 +152,7 @@ let article = '<
     >
     +subsubsection{数式記号・ギリシャ文字補完} <
     +p {
-      数式中で \code(`;`); や \code(`:`); を打つことでそれぞれ数式記号やギリシャ文字を補完することができます。特に数式記号については数式記号の形に即した入力で補完することができ、例えば \code(`;`); に続けて \code(`o`); を打つと \code(`\circ`); が、 \code(`oo`); を打つと \code(`\infty=が、 =x`); を打つと \code(`\times`); が補完されます。詳細なコマンドについては \code(`;`); や \code(`:`); に続けて \code(`<tab>`); を打つことで表示することができます。
+      数式中で \code(`;`); や \code(`:`); を打つことでそれぞれ数式記号やギリシャ文字を補完することができます。特に数式記号については数式記号の形に即した入力で補完することができ、例えば \code(`;`); に続けて \code(`o`); を打つと \code(`\circ`); が、 \code(`oo`); を打つと \code(`\infty`); が、 \code(`x`); を打つと \code(`\times`); が補完されます。詳細なコマンドについては \code(`;`); や \code(`:`); に続けて \code(`<tab>`); を打つことで表示することができます。
     }
     >
     >
@@ -178,7 +178,7 @@ let article = '<
     }
     +code(`
     (use-package yatex
-      ;; YaTeX がインストールされていない場合、package.elを使ってインストールする。
+      ;; YaTeX がインストールされていない場合、package.elを使ってインストールする
       :ensure t
       ;; :commands autoload するコマンドを指定
       :commands (yatex-mode)
@@ -195,13 +195,47 @@ let article = '<
       :config
       (setq YaTeX-kanji-code nil)
       (setq YaTeX-latex-message-code 'utf-8)
-      (setq YaTeX-use-\LaTeX;2e t)
-      (setq YaTeX-use-AMS-\LaTeX; t)
-      (setq tex-command "/Library/\TeX;/texbin/latexmk -pdf -pvc -view=none")
+      (setq YaTeX-use-LaTeX2e t)
+      (setq YaTeX-use-AMS-LaTeX t)
+      (setq tex-command "/Library/TeX/texbin/latexmk -pdf -pvc -view=none")
       (setq tex-pdfview-command "/usr/bin/open -a Skim")
       (auto-fill-mode 0)
       ;; company-ispellによる補完。companyについては後述
       (set (make-local-variable 'company-backends) '(company-ispell)))
+    `);
+    >
+    >
+    +section ?:(`reftex-参照挿入のためのマイナーモード`) {Ref\TeX;: 参照挿入のためのマイナーモード} <
+    +p {
+      \href(`https://www.gnu.org/software/auctex/reftex.html`){Ref\TeX;}は \code(`\ref{...}`); / \code(`\cref{...}`); \footnote{
+      ちなみにcleverefパッケージを使うことで cref を使った賢い相互参照ができます。
+    }
+    や \code(`\cite{...}`); といった参照関係のコマンドを検索して挿入するためのマイナーモードです。個人的な経験としては、複数のファイルに分割して文書を書く場合に検索に失敗することがありますが、単一ファイルで文章を書く際は概ね問題なく動いている様です。
+    }
+    +p {
+      以下のコマンドを良く使います。詳細は\href(`https://www.gnu.org/software/auctex/manual/reftex.index.html`){公式マニュアル}を参照してください。
+    }
+    +listing{
+    *  \code(`\ref{...}`); / \code(`\cref{...}`); の挿入: \code(`C-c (`);
+    *  \code(`\cite{...}`); の挿入: \code(`C-c [`);
+    }
+    +subsection ?:(`use-packageによる設定法-1`) {use-packageによる設定法} <
+    +p {
+      use-packageによるRef\TeX;の設定は以下の様になります。Ref\TeX;はEmacs 24.3以降ではEmacsに同梱されているので別途インストールせずに使うことができます。
+    }
+    +code(`
+    (use-package reftex
+      :ensure nil
+      :hook (yatex-mode . reftex-mode)
+      :bind (:map reftex-mode-map
+                  ("C-c (" . reftex-reference)
+                  ("C-c )" . nil)
+                  ("C-c >" . YaTeX-comment-region)
+                  ("C-c <" . YaTeX-uncomment-region))
+      :defer t
+      :custom
+      ;; \ref ではなく \cref を使うための設定
+      (reftex-ref-style-default-list '("Cleveref") "Use cref/Cref as default"))
     `);
     >
     >
