@@ -239,6 +239,30 @@ let article = '<
     `);
     >
     >
+    +section ?:(`biblio.el-書誌情報のweb検索機能`) {\href(`https://github.com/cpitclaudel/biblio.el`){biblio.el}: 書誌情報のWeb検索機能} <
+    +p {
+      \href(`https://github.com/cpitclaudel/biblio.el`){biblio.el}を使うことで書誌情報をWeb上で検索して、例えば\href(`https://ja.wikipedia.org/wiki/Bib\TeX;`){Bib\TeX;}のエントリーをダウンロードしてファイルに挿入することや \code(`kill-ring`); にコピーすることができます。それ以外にも (個人的にはほぼ使いませんが) 検索結果の画面をブラウザで開くこともできます。検索サイトとしてarXiv、CrossRef、DBLP、HAL、IEEE Exploreに対応している様ですが、個人的には専らDBLPを使っています。
+    }
+    +subsection ?:(`個人的に良く使う使い方`) {個人的に良く使う使い方} <
+    +p {
+      以下では一度 \code(`biblio-lookup`); を呼ぶことで使いたい検索サイトの選択画面を表示させていますが、 \code(`M-x biblio-dblp-lookup`); 等で直接検索サイトを指定することもできます。
+    }
+    +enumerate{
+    *  Bib\TeX;のエントリーを挿入したい場所に移動する。
+    *  \code(`M-x biblio-lookup`); で \code(`biblio-lookup`); を呼び、使いたい検索サイトを選択。
+    *  検索文字列を聞かれるので入力。
+    *  検索結果が表示されるので \code(`i`); または \code(`I`); で挿入する。
+    }
+    >
+    +subsection ?:(`package.el-によるインストール方法`) {\code(`package.el`); によるインストール方法} <
+    +p {
+      biblio.elは特別な設定をしなくても動くので、個人的には use-package を使わずに単にpackage.elを使ってインストールしています。例えば \code(`M-x package-list-packages`); からbiblioを選択してインストールすれば大丈夫です。Emacs Lispを使って自動でインストールする場合は以下の様になります。
+    }
+    +code(`
+    (package-install 'biblio)
+    `);
+    >
+    >
     >
 >
 

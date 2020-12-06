@@ -185,31 +185,22 @@ use-packageによるRefTeXの設定は以下の様になります。RefTeXはEma
     (reftex-ref-style-default-list '("Cleveref") "Use cref/Cref as default"))
 #+END_SRC
 
-* TODO COMMENT [[https://github.com/cpitclaudel/biblio.el][biblio.el]]
+* [[https://github.com/cpitclaudel/biblio.el][biblio.el]]: 書誌情報のWeb検索機能
 
-** https://github.com/cpitclaudel/biblio.el
+  [[https://github.com/cpitclaudel/biblio.el][biblio.el]]を使うことで書誌情報をWeb上で検索して、例えば[[https://ja.wikipedia.org/wiki/BibTeX][BibTeX]]のエントリーをダウンロードしてファイルに挿入することや =kill-ring= にコピーすることができます。それ以外にも (個人的にはほぼ使いませんが) 検索結果の画面をブラウザで開くこともできます。検索サイトとしてarXiv、CrossRef、DBLP、HAL、IEEE Exploreに対応している様ですが、個人的には専らDBLPを使っています。
 
-** [[https://ja.wikipedia.org/wiki/BibTeX][BiBTeX]]のエントリーを自動でダウンロードしてファイルに挿入することができる
+** 個人的に良く使う使い方
 
-** CrossRef, DBLP, HAL, arXiv, Dissemin, doi.orgに対応している (らしい)
+以下では一度 =biblio-lookup= を呼ぶことで使いたい検索サイトの選択画面を表示させていますが、 =M-x biblio-dblp-lookup= 等で直接検索サイトを指定することもできます。
 
-** 個人的には専らDBLPを使っている
+1. BibTeXのエントリーを挿入したい場所に移動する。
+2. =M-x biblio-lookup= で =biblio-lookup= を呼び、使いたい検索サイトを選択。
+3. 検索文字列を聞かれるので入力。
+4. 検索結果が表示されるので =i= または =I= で挿入する。
 
-** 使い方: M-x biblio-lookup → DBLP を選択
+** =package.el= によるインストール方法
 
-*** M-x biblio-dblp-lookup で直接 DBLPを検索することもできる
-
-**** i/I: Insert
-
-**** c/C: Copy
-
-** 単純に =package.el= を使ってインストールすれば良い。
-
-** 例えば =M-x package-list-packages= からインストールすれば良い
-
-** インストール方法: 単純に =package-list-packages= からインストールすれば良い
-
-** Emacs Lispでインストールするなら以下
+biblio.elは特別な設定をしなくても動くので、個人的には use-package を使わずに単にpackage.elを使ってインストールしています。例えば =M-x package-list-packages= からbiblioを選択してインストールすれば大丈夫です。Emacs Lispを使って自動でインストールする場合は以下の様になります。
 
 #+NAME: BIBLIO
 #+BEGIN_SRC elisp
