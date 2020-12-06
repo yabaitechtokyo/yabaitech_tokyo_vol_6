@@ -48,7 +48,7 @@ SATySFiという型も付いていて比較的全うな組版処理システム�
 
 本記事の内容はGUI版のGNU Emacs 27で動作確認を行っています。古い版のEmacsでは動かないものもあるかもしれませんし、Spacemacs等での動作確認も行っていません。また、mac OSとLinuxで動作確認をしていますが、Windowsでは(持ってないので)動作確認を行っていません。
 
-また、本記事の内容は後日別途無償公開する可能性が多いにあります。
+また、本記事の内容は後日別途無償公開する可能性が多いにあります。また、本記事で紹介している設定を纏めた =init.el= は hogehogefugafugaからダウンロードできます。
 
 * 下ごしらえ
 
@@ -362,7 +362,13 @@ FlycheckはEmacsの構文チェッカです。プログラムを書く際は型�
               ("M-p" . flycheck-previous-error)))
 #+END_SRC
 
-* TODO COMMENT まとめ
+* まとめ
+
+*いかがだったでしょうか!!*
+
+今回はGNU EmacsでLaTeX文書を書くための設定の一例を紹介しました。今回の方法が最適解であるかはさておき、GNU EmacsをLaTeX文書を書くために設定する際のたたき台になると幸いです。
+
+* COMMENT 設定ファイル
 
 #+BEGIN_SRC elisp :tangle init.el :noweb yes
 <<PACKAGE>>
