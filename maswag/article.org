@@ -151,8 +151,8 @@ use-packageによるYaTeXのインストール及び設定は以下の様にな�
     (setq tex-command "/Library/TeX/texbin/latexmk -pdf -pvc -view=none")
     (setq tex-pdfview-command "/usr/bin/open -a Skim")
     (auto-fill-mode 0)
-    ;; company-ispellによる補完。companyについては後述
-    (set (make-local-variable 'company-backends) '(company-ispell)))
+    ;; company-tabnineによる補完。companyについては後述
+    (set (make-local-variable 'company-backends) '(company-tabnine)))
 #+END_SRC
 
 * RefTeX: 参照挿入のためのマイナーモード
@@ -207,7 +207,15 @@ biblio.elは特別な設定をしなくても動くので、個人的には use-
 (package-install 'biblio)
 #+END_SRC
 
-* TODO COMMENT company-mode
+* company-mode: 補完用マイナーモード
+
+company-modeはEmacsの補完用マイナーモードです。IDEによく付いてくる補完機能と同じ様なものだと思って差し支えないでしょう。一昔前はauto-complteが良く使われていましたが、現在はcompany-modeの方が良く使われている様です。
+
+プログラムを書く場合に補完するのは変数名や関数名ですが、LaTeXの文章を書く場合には主に英単語を補完したいです。英単語の補完方法には幾つかありますが、ここではTabNineという人工知能による補完を =company-tabnine= を使います\footnote{ TabNineを使った補完以外にも、より以前から使われてきたスペルチェッカーの辞書を使った補完 (company-ispell)も良く動きます。}。
+
+** use-packageによる設定法
+
+use-packageによるcompany-mode及びcompany-tabnineの設定は以下の様になります。なお、初回起動時には =M-x company-tabnine-install-binary= でTabNineのバイナリをインストールする必要があります。
 
 #+NAME: COMPANY
 #+BEGIN_SRC elisp
@@ -215,10 +223,14 @@ biblio.elは特別な設定をしなくても動くので、個人的には use-
     :ensure t
     :config
     (global-company-mode)
-    (setq company-idle-delay 0) ; デフォルトは0.5。遅延なしにする。
-    (setq company-minimum-prefix-length 2) ; デフォルトは4。より少ない文字数から補完が始まる様にする。
-    (setq company-selection-wrap-around t) ; 候補の一番下でさらに下に行こうとすると一番上に戻る。
-    (setq company-show-numbers t) ; 番号を表示する。
+    ;; 遅延なしにする。
+    (setq company-idle-delay 0)
+    ;; デフォルトは4。より少ない文字数から補完が始まる様にする。
+    (setq company-minimum-prefix-length 2)
+    ;; 候補の一番下でさらに下に行こうとすると一番上に戻る。
+    (setq company-selection-wrap-around t)
+    ;; 番号を表示する。
+    (setq company-show-numbers t)
     :bind (:map company-active-map
                 ("C-n" . company-select-next)
                 ("C-p" . company-select-previous)
@@ -227,35 +239,10 @@ biblio.elは特別な設定をしなくても動くので、個人的には use-
     :bind (:map company-search-map
                 ("C-n" . company-select-next)
                 ("C-p" . company-select-previous)))
+  (use-package company-tabnine :ensure t)
+  (add-to-list 'company-backends #'company-tabnine)
 #+END_SRC
     
-* TODO COMMENT Flycheck
-
-** https://www.flycheck.org/en/latest/
-
-** [[https://www.nongnu.org/chktex/][chktex]]や[[https://ctan.org/pkg/lacheck][lacheck]]など(La)TeX用のlintが使える
-
-** 正直無くても困らないが、たまに括弧対応など有益な指摘をしてくれる。
-
-*** 一方で、半開区間等本当に括弧が対応していなくても良い場合も指摘してくれる
-
-** use-packageによる設定法
-
-#+NAME: FLYCHECK
-#+BEGIN_SRC elisp
-  (use-package flycheck
-    :ensure t
-    :hook (after-init . global-flycheck-mode)
-    :config
-    (flycheck-add-mode 'tex-chktex 'yatex-mode)
-    (flycheck-add-mode 'tex-lacheck 'yatex-mode)
-    ;; chktexが自動で見付からない場合は以下の様に指定する
-    (setq flycheck-tex-chktex-executable "/Library/TeX/texbin/chktex")
-    :bind (:map flycheck-mode-map
-              ("M-n" . flycheck-next-error)
-              ("M-p" . flycheck-previous-error)))
-#+END_SRC
-
 * TODO COMMENT FlySpell
 
 ** https://www.emacswiki.org/emacs/FlySpell
@@ -332,11 +319,39 @@ e)
 
 *** =C-x r j [文字]= で記憶した位置にジャンプ
 
+* TODO COMMENT Flycheck
+
+** https://www.flycheck.org/en/latest/
+
+** [[https://www.nongnu.org/chktex/][chktex]]や[[https://ctan.org/pkg/lacheck][lacheck]]など(La)TeX用のlintが使える
+
+** 正直無くても困らないが、たまに括弧対応など有益な指摘をしてくれる。
+
+*** 一方で、半開区間等本当に括弧が対応していなくても良い場合も指摘してくれる
+
+** use-packageによる設定法
+
+#+NAME: FLYCHECK
+#+BEGIN_SRC elisp
+  (use-package flycheck
+    :ensure t
+    :hook (after-init . global-flycheck-mode)
+    :config
+    (flycheck-add-mode 'tex-chktex 'yatex-mode)
+    (flycheck-add-mode 'tex-lacheck 'yatex-mode)
+    ;; chktexが自動で見付からない場合は以下の様に指定する
+    (setq flycheck-tex-chktex-executable "/Library/TeX/texbin/chktex")
+    :bind (:map flycheck-mode-map
+              ("M-n" . flycheck-next-error)
+              ("M-p" . flycheck-previous-error)))
+#+END_SRC
+
 * TODO COMMENT まとめ
 
 #+BEGIN_SRC elisp :tangle init.el :noweb yes
 <<PACKAGE>>
 <<USE_PACKAGE>>
+<<COMPANY>>
 <<YATEX>>
 <<REFTEX>>
 <<BIBLIO>>

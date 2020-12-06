@@ -200,8 +200,8 @@ let article = '<
       (setq tex-command "/Library/TeX/texbin/latexmk -pdf -pvc -view=none")
       (setq tex-pdfview-command "/usr/bin/open -a Skim")
       (auto-fill-mode 0)
-      ;; company-ispellによる補完。companyについては後述
-      (set (make-local-variable 'company-backends) '(company-ispell)))
+      ;; company-tabnineによる補完。companyについては後述
+      (set (make-local-variable 'company-backends) '(company-tabnine)))
     `);
     >
     >
@@ -260,6 +260,45 @@ let article = '<
     }
     +code(`
     (package-install 'biblio)
+    `);
+    >
+    >
+    +section ?:(`company-mode-補完用マイナーモード`) {company-mode: 補完用マイナーモード} <
+    +p {
+      company-modeはEmacsの補完用マイナーモードです。IDEによく付いてくる補完機能と同じ様なものだと思って差し支えないでしょう。一昔前はauto-complteが良く使われていましたが、現在はcompany-modeの方が良く使われている様です。
+    }
+    +p {
+      プログラムを書く場合に補完するのは変数名や関数名ですが、\LaTeX;の文章を書く場合には主に英単語を補完したいです。英単語の補完方法には幾つかありますが、ここではTabNineという人工知能による補完を \code(`company-tabnine`); を使います\footnote{
+      TabNineを使った補完以外にも、より以前から使われてきたスペルチェッカーの辞書を使った補完 (company-ispell)も良く動きます。
+    }。
+    }
+    +subsection ?:(`use-packageによる設定法-2`) {use-packageによる設定法} <
+    +p {
+      use-packageによるcompany-mode及びcompany-tabnineの設定は以下の様になります。なお、初回起動時には \code(`M-x company-tabnine-install-binary`); でTabNineのバイナリをインストールする必要があります。
+    }
+    +code(`
+    (use-package company
+      :ensure t
+      :config
+      (global-company-mode)
+      ;; 遅延なしにする。
+      (setq company-idle-delay 0)
+      ;; デフォルトは4。より少ない文字数から補完が始まる様にする。
+      (setq company-minimum-prefix-length 2)
+      ;; 候補の一番下でさらに下に行こうとすると一番上に戻る。
+      (setq company-selection-wrap-around t)
+      ;; 番号を表示する。
+      (setq company-show-numbers t)
+      :bind (:map company-active-map
+                  ("C-n" . company-select-next)
+                  ("C-p" . company-select-previous)
+                  ("C-s" . company-filter-candidates)
+                  ("<tab>" . company-complete-selection))
+      :bind (:map company-search-map
+                  ("C-n" . company-select-next)
+                  ("C-p" . company-select-previous)))
+    (use-package company-tabnine :ensure t)
+    (add-to-list 'company-backends #'company-tabnine)
     `);
     >
     >
