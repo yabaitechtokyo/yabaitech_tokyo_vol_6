@@ -66,34 +66,34 @@ end = struct
           +enumerate{
             * \dfn-ja-en{ストレートフラッシュ}{Straight flush}:
               フラッシュとストレートの複合役。すべての役の中で最も強い。
-              例: A\spade;K\spade;Q\spade;J\spade;T\spade;
+              例: \spade{A}\spade{K}\spade{Q}\spade{J}\spade{T}
               \footnote{“T”は10 (Ten) を表します}
             * \dfn-ja-en{フォーカード}{Four of a kind}:
               同じランクのカードを4枚集めた役。
-              例: 6\spade;6\heart;6\diamond;6\club;J\diamond;
+              例: \spade{6}\heart{6}\diamond{6}\club{6}\diamond{J}
             * \dfn-ja-en{フルハウス}{Full house}:
               同じランクのカード3枚と、別の同じランクのカード2枚で構成される役。
-              例: K\heart;K\diamond;K\club;3\heart;3\club;
+              例: \heart{K}\diamond{K}\club{K}\heart{3}\club{3}
             * \dfn-ja-en{フラッシュ}{Flush}:
               同じスートのカードを5枚集めた役。
-              例: Q\heart;T\heart;7\heart;5\heart;4\heart;
+              例: \heart{Q}\heart{T}\heart{7}\heart{5}\heart{4}
             * \dfn-ja-en{ストレート}{Straight}:
               数字が連続した5枚のカードで構成される役。
               Aは14または1として扱うことができる。
               A、K、2の3枚を含むものはストレートとは見なされない。
-              例: J\heart;T\club;9\club;8\heart;7\spade;
+              例: \heart{J}\club{T}\club{9}\heart{8}\spade{7}
             * \dfn-ja-en{スリーカード}{Three of a kind}:
               同じランクのカードを3枚集めた役。
-              例: 5\spade;5\diamond;5\club;A\heart;J\club;
+              例: \spade{5}\diamond{5}\club{5}\heart{A}\club{J}
             * \dfn-ja-en{ツーペア}{Two pair}:
               同じランクのカード2枚の組を2組集めた役。
-              例: 8\spade;8\club;3\spade;3\diamond;Q\diamond;
+              例: \spade{8}\club{8}\spade{3}\diamond{3}\diamond{Q}
             * \dfn-ja-en{ワンペア}{One pair}:
               同じランクのカードを2枚集めた役。
-              例: 7\diamond;7\club;9\spade;4\spade;2\diamond;
+              例: \diamond{7}\club{7}\spade{9}\spade{4}\diamond{2}
             * \dfn-ja-en{ハイカード}{High card}:
               上記のいずれにも当てはまらないもの。いわゆる“ブタ”。
-              例: A\club;J\spade;8\diamond;4\club;2\heart;
+              例: \club{A}\spade{J}\diamond{8}\club{4}\heart{2}
           }
 
           +p{
@@ -188,8 +188,8 @@ end = struct
 
         +p{
           なお、各カードは0～51の整数で表現されているものとし、
-          0～3が2\club;2\diamond;2\heart;2\spade;、4～7が3\club;3\diamond;3\heart;3\spade;、
-          ${\cdots}、48～51がA\club;A\diamond;A\heart;A\spade;に対応しているものとします。
+          0～3が\club{2}\diamond{2}\heart{2}\spade{2}、4～7が\club{3}\diamond{3}\heart{3}\spade{3}、
+          ${\cdots}、48～51が\club{A}\diamond{A}\heart{A}\spade{A}に対応しているものとします。
         }
 
         +p{
@@ -405,10 +405,10 @@ end = struct
             \ref-subsection(`evaluator-naive`); で紹介したナイーブな実装は 7 choose 5 通りの
             カードの選び方をすべて試すものでしたが、7枚のカードが与えられたときにそれらを
             直接評価する戦略も考えられます。
-            例えば、K\club;T\diamond;8\club;4\club;4\heart;4\spade;3\heart;というハンドが
+            例えば、\club{K}\diamond{T}\club{8}\club{4}\heart{4}\spade{4}\heart{3}というハンドが
             与えられたとき、人間は 7 choose 5 通りのカードの選び方を考えなくとも、
-            まず4のスリーカードを認識し、残ったカードのうちランクの高いK\club;とT\diamond;を加えた
-            4\club;4\heart;4\spade;K\club;T\diamond;が最終的な5枚組になることを
+            まず4のスリーカードを認識し、残ったカードのうちランクの高い\club{K}と\diamond{T}を加えた
+            \club{4}\heart{4}\spade{4}\club{K}\diamond{T}が最終的な5枚組になることを
             瞬時に把握できるでしょう。
           }
 
