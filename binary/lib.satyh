@@ -1,3 +1,4 @@
+@require: base/color-ext
 @require: base/inline
 
 module BinaryCommands : sig
@@ -18,18 +19,21 @@ end = struct
 
   let-inline ctx \spade = ctx
     |> make-emoji-ctx
-    |> Inline.of-string `♠️`
+    |> Inline.of-string `♠`
 
   let-inline ctx \heart = ctx
     |> make-emoji-ctx
-    |> Inline.of-string `♥️`
+    |> set-text-color (Color.of-css `hotpink`)
+    |> Inline.of-string `♥`
 
   let-inline ctx \club = ctx
     |> make-emoji-ctx
-    |> Inline.of-string `♣️`
+    |> set-text-color (Color.of-css `forestgreen`)
+    |> Inline.of-string `♣`
 
   let-inline ctx \diamond = ctx
     |> make-emoji-ctx
-    |> Inline.of-string `♦️`
+    |> set-text-color (Color.of-css `royalblue`)
+    |> Inline.of-string `♦`
 
 end
