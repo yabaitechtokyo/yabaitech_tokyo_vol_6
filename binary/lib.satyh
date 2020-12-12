@@ -1,0 +1,35 @@
+@require: base/inline
+
+module BinaryCommands : sig
+
+  val \spade : [] inline-cmd
+  val \heart : [] inline-cmd
+  val \club : [] inline-cmd
+  val \diamond : [] inline-cmd
+
+end = struct
+
+  let font-emoji =
+    (`fonts-noto-sans-cjk-jp:NotoSansCJKjp-Regular`, 1.0, 0.)
+  let make-emoji-ctx ctx = ctx
+    |> set-font Latin font-emoji
+    |> set-font HanIdeographic font-emoji
+    |> set-font Kana font-emoji
+
+  let-inline ctx \spade = ctx
+    |> make-emoji-ctx
+    |> Inline.of-string `♠️`
+
+  let-inline ctx \heart = ctx
+    |> make-emoji-ctx
+    |> Inline.of-string `♥️`
+
+  let-inline ctx \club = ctx
+    |> make-emoji-ctx
+    |> Inline.of-string `♣️`
+
+  let-inline ctx \diamond = ctx
+    |> make-emoji-ctx
+    |> Inline.of-string `♦️`
+
+end

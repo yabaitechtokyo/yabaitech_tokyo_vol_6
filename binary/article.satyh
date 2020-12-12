@@ -4,11 +4,15 @@
 
 @require: class-yabaitech/yabaitech
 
+@import: lib
+
 module Binary : sig
 
   val article : block-text
 
 end = struct
+
+  open BinaryCommands
 
   let-inline \dfn-ja-en ja en = {\dfn{#ja; (#en;)}}
 
@@ -23,7 +27,7 @@ end = struct
     <
       +section{はじめに} <
         +p{
-          はじめまして、 yabaitech.tokyo の新メンバーのばいなりです。
+          はじめまして\spade;、 yabaitech.tokyo の新メンバーのばいなりです。
           yabaitech.tokyo のメンバーの一部でテキサスホールデムポーカーが流行っており、
           一緒にポーカーで遊んでいたらこちらに加入させられてしまいました。
           せっかくなのでポーカーに関する技術記事を書こうということで、
