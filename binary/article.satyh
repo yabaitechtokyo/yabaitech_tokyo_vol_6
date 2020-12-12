@@ -764,7 +764,7 @@ end = struct
                   return flushes[q];
                 }
 
-                // テーブルを引いてストレートおよびハイカードの場合を処理
+                // ストレートおよびハイカードの場合はテーブルを引いて判定/処理
                 if (unique5[q]) {
                   return unique5[q];
                 }
@@ -805,15 +805,13 @@ end = struct
 
             \d-code(`
               unsigned find_fast(unsigned u) {
-                  unsigned a, b, r;
                   u += 0xe91aaa35;
                   u ^= u >> 16;
                   u += u << 8;
                   u ^= u >> 4;
-                  b = (u >> 8) & 0x1ff;
-                  a = (u + (u << 2)) >> 19;
-                  r = a ^ hash_adjust[b];
-                  return r;
+                  unsigned a = (u + (u << 2)) >> 19;
+                  unsigned b = (u >> 8) & 0x1ff;
+                  return a ^ hash_adjust[b];
               }
             `);
           }
@@ -835,11 +833,12 @@ end = struct
           +p{
             ここまでに用意したテーブルの容量は48KB程度と、これまでに見てきたテーブルとは
             桁違いに容量を削減できており、これならキャッシュヒット率も問題ありません。
-            7枚のカードからなるハンドを評価するには 7 choose 5 通りの5枚組を
-            評価しなければなりませんが、ランダムアクセス速度（1億ハンド）は10.5秒と、
-            \ref-subsection(`evaluator-naive`); に示した最もナイーブな実装と比べると5倍程度高速です。
+            7枚のカードからなるハンドを評価するには、\ref-subsection(`evaluator-naive`); に示した
+            最もナイーブな実装と同じように 7 choose 5 通りの5枚組を評価しなければなりませんが、
+            ランダムアクセス速度（1億ハンド）は10.5秒と、\ref-subsection(`evaluator-naive`); の
+            実装と比べると5倍程度高速になっています。
             7枚のカードを直接評価する \ref-subsection(`evaluator-naive-7`); の実装と比較してしまうと
-            やはり遅いですが、7枚のうちどの5枚が用いられたかを復元する必要がある場合などは
+            やはり遅いですが、7枚のうちどの5枚が用いられたかを復元する必要がある場合などは、
             こちらを使用した方が簡潔に処理できるかもしれません。
           }
         >
