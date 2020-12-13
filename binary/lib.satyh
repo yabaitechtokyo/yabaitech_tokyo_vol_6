@@ -10,44 +10,45 @@ module BinaryCommands : sig
 
 end = struct
 
-  let huge-penalty = 1000000
-
   let font-emoji =
     (`fonts-noto-sans-cjk-jp:NotoSansCJKjp-Regular`, 1.0, 0.)
+
   let make-emoji-ctx ctx = ctx
     |> set-font Latin font-emoji
     |> set-font HanIdeographic font-emoji
     |> set-font Kana font-emoji
 
-  let-inline ctx \spade rank =
+  let card-ctx ctx rank ib-suit =
     let ib-rank = ctx |> Inline.read rank in
+    let pads = (0pt, 0pt, 0pt, 0pt) in
+    let deco _ _ _ _ = [] in
+    inline-frame-outer pads deco (ib-rank ++ ib-suit)
+
+  let-inline ctx \spade rank =
     let ib-suit = ctx
       |> make-emoji-ctx
       |> Inline.of-string `♠` in
-    discretionary huge-penalty (ib-rank ++ ib-suit) ib-rank ib-suit
+    card-ctx ctx rank ib-suit
 
   let-inline ctx \heart rank =
-    let ib-rank = ctx |> Inline.read rank in
     let ib-suit = ctx
       |> make-emoji-ctx
       |> set-text-color (Color.of-css `hotpink`)
       |> Inline.of-string `♥` in
-    discretionary huge-penalty (ib-rank ++ ib-suit) ib-rank ib-suit
+    card-ctx ctx rank ib-suit
 
   let-inline ctx \club rank =
-    let ib-rank = ctx |> Inline.read rank in
     let ib-suit = ctx
       |> make-emoji-ctx
       |> set-text-color (Color.of-css `forestgreen`)
       |> Inline.of-string `♣` in
-    discretionary huge-penalty (ib-rank ++ ib-suit) ib-rank ib-suit
+    card-ctx ctx rank ib-suit
 
   let-inline ctx \diamond rank =
-    let ib-rank = ctx |> Inline.read rank in
     let ib-suit = ctx
       |> make-emoji-ctx
       |> set-text-color (Color.of-css `royalblue`)
       |> Inline.of-string `♦` in
-    discretionary huge-penalty (ib-rank ++ ib-suit) ib-rank ib-suit
+    card-ctx ctx rank ib-suit
 
 end
