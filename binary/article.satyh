@@ -270,7 +270,7 @@ end = struct
           }
 
           +p{
-            5枚のカードからなるハンドの評価を行う関数 `evaluate_hand_naive_5()`については
+            5枚のカードからなるハンドの評価を行う関数 `evaluate_naive_5()`については
             後ほど見ていくことにして、プログラムを記述していくと次のようになるでしょう:
 
             \d-code(```
@@ -280,14 +280,14 @@ end = struct
               };
 
               // 7枚のカードからなるハンドの強さを評価する
-              int evaluate_hand_naive(const vector<int> &hand) {
+              int evaluate_naive(const vector<int> &hand) {
                 int best = 0;
                 vector<int> subhand(5);
                 for (int i = 0; i < 21; ++i) {
                   for (int j = 0; j < 5; ++j) {
                     subhand[j] = hand[comb_7_5[i][j]];
                   }
-                  best = max(best, evaluate_hand_naive_5(subhand));
+                  best = max(best, evaluate_naive_5(subhand));
                 }
                 return best;
               }
@@ -295,7 +295,7 @@ end = struct
           }
 
           +p{
-            それでは、関数`int evaluate_hand_naive_5(const vector<int> &hand);`を続いて
+            それでは、関数`int evaluate_naive_5(const vector<int> &hand);`を続いて
             定義していきましょう。ナイーブとは言えども、ビット演算を利用した効率的な実装を
             目指すこととし、まずは出現したスートとランクを管理するビットセットと、
             各ランクの出現回数を管理する変数を準備します。
@@ -418,7 +418,8 @@ end = struct
           +p{
             このような戦略に基づく実装を正確に書き下すのは、5枚のハンドを評価する実装と比べてさらに
             注意力を要しますが、丁寧に考察をしていけばそれなりに簡潔に記述することが可能です。
-            まずは、ユーティリティ関数として上位`n`ビットを保持する関数を定義しましょう:
+            まずはユーティリティ関数として、立っているビットのうち上位から`n`ビットを保持する関数を
+            定義しましょう:
 
             \d-code(```
               int keep_n_msb(int x, int n) {
@@ -432,7 +433,8 @@ end = struct
               }
             ```);
 
-            ここで、 `msb(x)` は入力 `x` の最上位ビットのみが立った値を返す関数とします
+            ここで、 `msb(x)` は入力 `x` の立っているビットのうち
+            最上位のビットのみが立った値を返す関数とします
             （gcc/clangでは `int` 型に対しては `1 << (__builtin_clz(x) ^ 31)` として定義できます）。
             このような関数を用意できると、先ほどの例のようなスリーカードの処理は次のように
             書き下すことができます:
@@ -509,7 +511,7 @@ end = struct
               // ハッシュテーブルは前計算しておく
               unordered_map<uint64_t, uint16_t> hash_table;
 
-              uint16_t evaluate_hand_hash_table(const vector<int> &hand) {
+              uint16_t evaluate_with_hash_table(const vector<int> &hand) {
                 int sorted[7];
                 copy(hand.begin(), hand.end(), sorted);
                 sort(sorted.begin(), sorted.end());
@@ -588,7 +590,7 @@ end = struct
             ボトルネックは普通にハッシュテーブルを引く処理であって、
             ソートの部分を高速化しても正直あまり嬉しくなかったですね。
             前計算した結果がメモリに収まるからと言って、安直にハッシュテーブルを用いるだけでは、
-            5枚のカードをナイーブに評価する実装よりも遅くなってしまって
+            \ref-subsection(`evaluator-naive`); の実装よりも遅くなってしまって
             使い物にならないことが分かりました。
           }
         >
@@ -647,7 +649,7 @@ end = struct
               // 配列は前計算しておく
               vector<uint16_t> vec;
 
-              uint16_t evaluate_hand_vector(const vector<int> &hand) {
+              uint16_t evaluate_with_vector(const vector<int> &hand) {
                 int sorted[7];
                 copy(hand.begin(), hand.end(), sorted)
                 sort_7(sorted);
@@ -704,7 +706,7 @@ end = struct
               // 構成されたグラフを予めロードしておく
               vector<int> hand_ranks(32487834);
 
-              int evaluate_hand_twoplustwo(const vector<int> &hand) {
+              int evaluate_two_plus_two(const vector<int> &hand) {
                 int p = 53;
                 for (int i = 0; i < 7; ++i) {
                   p = hand_ranks[hand[i] + p];
@@ -746,6 +748,7 @@ end = struct
 
             \d-code(`
               32-bit representation = |xxxAKQJT|98765432|cdhsrrrr|xxpppppp|
+
               p: r番目の素数 (2->2, 3->3, ..., A->41)
               r: ランクの4ビット表現 (2->0, 3->1, ..., A->12)
               cdhs: スートのビットフラグ (例えばスペードなら0001となる)
@@ -758,7 +761,7 @@ end = struct
             次のように記述することができます:
 
             \d-code(`
-              uint16_t evaluate_hand_internal(int c1, int c2, int c3, int c4, int c5) {
+              uint16_t evaluate_cactus_kev_internal(int c1, int c2, int c3, int c4, int c5) {
                 // ランクのビットフラグの論理和 (最大値は0x1f00 = 7936)
                 int q = (c1 | c2 | c3 | c4 | c5) >> 16;
 
@@ -830,7 +833,7 @@ end = struct
 
             \d-code(`
               return hash_values[find_fast(
-                (c1 & 0xff) * (c2 & 0xff) * (c3 & 0xff) * (c4 & 0xff) * (c5 & 0xff)
+                (c1 & 0x3f) * (c2 & 0x3f) * (c3 & 0x3f) * (c4 & 0x3f) * (c5 & 0x3f)
               )];
             `);
           }
@@ -845,6 +848,47 @@ end = struct
             7枚のカードを直接評価する \ref-subsection(`evaluator-naive-7`); の実装と比較してしまうと
             やはり遅いですが、7枚のうちどの5枚が用いられたかを復元する必要がある場合などは、
             こちらを使用した方が簡潔に処理できるかもしれません。
+          }
+        >
+
+        +subsection{これまでの考察を活かした実装} <
+          +listing{
+            * \dfn{シーケンシャル速度}（1.33億ハンド）: x.xx秒（xxx万評価/秒）
+            * \dfn{ランダムアクセス速度}（1億ハンド）: x.xx秒（xxx万評価/秒）
+            * \dfn{メモリ使用量}: xxxKB
+          }
+
+          +p{
+            さて、ここまで前置きが長くなってしまいましたが、これまでの考察を活かして
+            オレオレ最強爆速評価器を作ることを考えていきましょう。
+          }
+
+          +p{
+            \ref-subsection(`evaluator-cactus-kev`); の Cactus Kev による実装は、
+            5枚のカードからなるハンドにしか直接適用できませんでしたが、
+            以下のような重要なテクニックを与えてくれました:
+          }
+
+          +listing{
+            * 52枚のカードを0～51の整数ではなく特殊なフォーマットで表現する
+            * フラッシュとそれ以外に処理を分割することで、テーブルサイズを大幅に削減する
+            * 完全ハッシュ関数の導入
+          }
+
+          +p{
+            本節では、これらのテクニックを引き続き用いながら、
+            7枚のカードからなるハンドを直接評価する方法を考えていきます。
+            まずは、7枚のカードの組が与えられたときに、
+            フラッシュかどうかをどのように高速に判定するかを考えていきましょう。
+            \ref-subsection(`evaluator-cactus-kev`); ではどのように判定していたかというと、
+            各カードにスートを表す4ビットのビットフラグを持たせて、
+            それらのビット論理積を取って判定をしていました。
+            ハンドが7枚のカードで構成される場合では、7枚のうちの5枚が
+            同じスートなら良いわけですから、全く同じ戦略を取ることはできません。
+          }
+
+          +p{
+            ぽへぽへ
           }
         >
       >
