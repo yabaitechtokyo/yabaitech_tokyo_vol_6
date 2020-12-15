@@ -43,7 +43,7 @@ SATySFiという型も付いていて比較的全うな組版処理システム�
 
 * おことわり
 
-本記事ではLaTeX及びBiBTeXというものを聞いたことがあったり、最低限の使い方を知っていることを前提にしています。これらの使い方がわからない場合はTeX Wikiの[[https://texwiki.texjp.org/?LaTeX%E5%85%A5%E9%96%80][LaTeX入門]]\cite{LaTeX入門}の記事等を参考にしてください。
+本記事ではLaTeX及びBiBTeXというものを聞いたことがあったり、最低限の使い方を知っていることを前提にしています。これらの使い方がわからない場合はTeX Wikiの[[https://texwiki.texjp.org/?LaTeX%E5%85%A5%E9%96%80][LaTeX入門]]\cite{latex入門}の記事等を参考にしてください。
 
 また、本記事ではEmacs Lispの細かい言語機能などの知識は仮定しませんが\footnote{そもそも筆者自身もがEmacs Lispの詳細をわかっていないです}、Emacsの使い方を最低限理解していることは前提としています。
 例えばメジャーモードとマイナーモード等の用語や、 =M-x= や =C-c= などの良くEmacsの説明で使う表記は前置きなく使います。Emacsの初心者向けの説明は、例えば Emacs JP にある[[https://emacs-jp.github.io/tips/emacs-in-2020][入門記事]]\cite{2020年代のEmacs入門}を参照してください。
@@ -159,10 +159,10 @@ use-packageによるYaTeXのインストール及び設定は以下の様にな�
 
 * RefTeX: 参照挿入のためのマイナーモード
 
-[[https://www.gnu.org/software/auctex/reftex.html][RefTeX]]\cite{RefTeX}は =\ref{...}= / =\cref{...}= \footnote{ちなみにcleverefパッケージを使うことで cref を使った賢い相互参照ができます。}
+[[https://www.gnu.org/software/auctex/reftex.html][RefTeX]]\cite{reftex}は =\ref{...}= / =\cref{...}= \footnote{ちなみにcleverefパッケージを使うことで cref を使った賢い相互参照ができます。}
 や =\cite{...}= といった参照関係のコマンドを検索して挿入するためのマイナーモードです。個人的な経験としては、複数のファイルに分割して文書を書く場合に検索に失敗することがありますが、単一ファイルで文章を書く際は概ね問題なく動いている様です。
 
-以下のコマンドを良く使います。詳細は[[https://www.gnu.org/software/auctex/manual/reftex.index.html][公式マニュアル]]\cite{RefTeX-manual}を参照してください。
+以下のコマンドを良く使います。詳細は[[https://www.gnu.org/software/auctex/manual/reftex.index.html][公式マニュアル]]\cite{reftex-manual}を参照してください。
 
 - =\ref{...}= / =\cref{...}= の挿入: =C-c (=
 - =\cite{...}= の挿入: =C-c [=

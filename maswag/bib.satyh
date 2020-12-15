@@ -2,7 +2,7 @@
 
 let maswag-bibliography = [
 
-  (`LaTeX入門`, WebSite(|
+  (`latex入門`, WebSite(|
     author = {|TeX wiki contributors|};
     title = {LaTeX入門 - TeX Wiki};
     url = `https://texwiki.texjp.org/?LaTeX%E5%85%A5%E9%96%80`;
@@ -58,14 +58,14 @@ let maswag-bibliography = [
     year = 2019;
   |));
 
-  (`RefTeX`, WebSite(|
+  (`reftex`, WebSite(|
     author = {|AUC\TeX; project|};
     title = {RefTeX - References, labels, citations};
     url = `https://www.gnu.org/software/auctex/reftex.html`;
     year = 2013;
   |));
 
-  (`RefTeX-manual`, WebSite(|
+  (`reftex-manual`, WebSite(|
     author = {|Free Software Foundation|};
     title = {RefTeX Manual - GNU Project - Free Software Foundation (FSF)};
     url = `https://www.gnu.org/software/auctex/manual/reftex.index.html`;
