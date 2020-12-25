@@ -4,12 +4,25 @@
 
 @require: class-yabaitech/yabaitech
 
+@import: article-main
+
+let wasabiz-bibliography = []
+
 module Wasabiz : sig
 
   val article : block-text
 
 end = struct
 
-  let article = '<>
+  let article = '<
+    +chapter ?:(`wasabiz-article`)
+    (|
+        bibliography = wasabiz-bibliography;
+        title = {高速 SAT ソルバーを支える技術};
+        author = {wasabiz};
+        title-for-toc = Option.none;
+        subtitle = Option.none;
+    |)(wasabiz-article);
+  >
 
 end
