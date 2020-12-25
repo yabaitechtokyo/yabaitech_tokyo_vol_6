@@ -23,17 +23,24 @@ YABAITECH.TOKYO vol.5
 =====================
 `` in
 
+let colophon = ColophonData.make (|
+  title = `YABAITECH.TOKYO vol.6`;
+  history = [
+    `2020年12月26日 第一刷 発行`;
+  ];
+  publisher = (Option.some `yabaitech.tokyo`);
+  website = (Option.some `http://yabaitech.tokyo`);
+  email = (Option.some `admin@yabaitech.tokyo`);
+  printer = Option.none;
+|)
+in
 document (|
   title = `YABAITECH.TOKYO`;
   volume = `vol.6`;
   date = `2020`;
-  author = `yabaitech.tokyo`;
-  email = `admin@yabaitech.tokyo`;
-  website = `https://yabaitech.tokyo`;
-  publisher = `(vol.6は電子書籍のみの出版です)`;
   front = Option.some `front.pdf`;
-  history = `pohe`;
-  |) '<
+  colophon = colophon;
+|) '<
     #Binary.article;
     #MasWag.article;
     #Wasabiz.article;
