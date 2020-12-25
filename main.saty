@@ -31,7 +31,7 @@ document (|
   email = `admin@yabaitech.tokyo`;
   website = `https://yabaitech.tokyo`;
   publisher = `(vol.6は電子書籍のみの出版です)`;
-  front = Option.none;
+  front = Option.some `front.pdf`;
   history = `pohe`;
   |) '<
     #Binary.article;
