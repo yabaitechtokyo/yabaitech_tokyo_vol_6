@@ -1,5 +1,4 @@
 @require: itemize
-@require: code
 @require: base/image
 
 @require: class-yabaitech/yabaitech

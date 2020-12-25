@@ -1,7 +1,10 @@
 @require: class-yabaitech/yabaitech
 @require: itemize
-@require: code
 @require: math
+
+@import: ../lib/code
+
+open Code2
 
 let-block ctx +image filename =
   let image = Image.of-jpeg (`wasabiz/images/` ^ filename) in

@@ -1,9 +1,9 @@
 @require: itemize
-@require: code
 
 @require: class-yabaitech/yabaitech
 
 @import: lib
+@import: ../lib/code
 
 module Binary : sig
 
@@ -11,6 +11,7 @@ module Binary : sig
 
 end = struct
 
+  open Code2
   open BinaryCommands
 
   let-inline \dfn-ja-en ja en = {\dfn{#ja; (#en;)}}

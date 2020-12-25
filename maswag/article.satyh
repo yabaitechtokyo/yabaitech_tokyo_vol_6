@@ -1,10 +1,10 @@
 @require: itemize
-@require: code
 @require: base/image
 @require: pervasives
 
 @require: class-yabaitech/yabaitech
 
+@import: ../lib/code
 @import: local
 @import: bib
 
@@ -13,6 +13,8 @@ module MasWag : sig
   val article : block-text
 
 end = struct
+
+open Code2
 
 let article = '<
     +chapter ?:(`maswag-article`)
