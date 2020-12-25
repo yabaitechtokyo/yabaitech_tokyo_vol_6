@@ -13,7 +13,7 @@ module Code2 : sig
   val \d-code : [string] inline-cmd
 
 end = struct
-  
+
   let code-fill-color = Gray(1.0)
   let code-stroke-color = Gray(0.25)
   let console-fill-color = Gray(0.25)
@@ -42,14 +42,14 @@ end = struct
   let scheme decoset txtcolor ctx code =
     let pads = (15pt, 10pt, 10pt, 10pt) in
     block-frame-breakable ctx pads decoset (fun ctx -> (
-      let fontsize = get-font-size ctx in
+      let fontsize = (get-font-size ctx) *' 0.8 in
       let ctx = ctx |> set-code-font
-        |> set-leading (fontsize *' 1.5) in
+                    |> set-leading (fontsize *' 1.875)
+                    |> set-font-size fontsize in
       let charwid = get-natural-width (read-inline ctx {0}) in
       let ctx-code =
         ctx |> set-space-ratio (charwid /' fontsize) 0. 0.
             |> set-text-color txtcolor
-            |> set-font-size (fontsize *' 0.8)
       in
 
       let lstraw = split-into-lines code in
