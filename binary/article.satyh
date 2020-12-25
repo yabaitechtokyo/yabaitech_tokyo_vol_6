@@ -14,6 +14,8 @@ end = struct
   open Code2
   open BinaryCommands
 
+  let-block ctx +newpage = clear-page
+
   let-inline \dfn-ja-en ja en = {\dfn{#ja; (#en;)}}
 
   let-math \empty = ${}
@@ -208,6 +210,8 @@ end = struct
             0～51の整数であって相異なることを仮定する。
         }
 
+        +newpage;
+
         +p{
           プログラムは以下の3点によって評価されます:
         }
@@ -273,82 +277,90 @@ end = struct
           +p{
             5枚のカードからなるハンドの評価を行う関数 `evaluate_naive_5()` については
             後ほど見ていくことにして、プログラムを記述していくと次のようになるでしょう:
-
-            \d-code(```
-              // 7 choose 5の組み合わせを予め定数として持っておく
-              const int comb_7_5[21][5] = {
-                { 0, 1, 2, 3, 4 }, { 0, 1, 2, 3, 5 }, (中略), { 2, 3, 4, 5, 6 }
-              };
-
-              // 7枚のカードからなるハンドの強さを評価する
-              int evaluate_naive(const vector<int> &hand) {
-                int best = 0;
-                vector<int> subhand(5);
-                for (int i = 0; i < 21; ++i) {
-                  for (int j = 0; j < 5; ++j) {
-                    subhand[j] = hand[comb_7_5[i][j]];
-                  }
-                  best = max(best, evaluate_naive_5(subhand));
-                }
-                return best;
-              }
-            ```);
           }
+
+          +code(```
+            // 7 choose 5の組み合わせを予め定数として持っておく
+            const int comb_7_5[21][5] = {
+              { 0, 1, 2, 3, 4 }, { 0, 1, 2, 3, 5 }, (中略), { 2, 3, 4, 5, 6 }
+            };
+
+            // 7枚のカードからなるハンドの強さを評価する
+            int evaluate_naive(const vector<int> &hand) {
+              int best = 0;
+              vector<int> subhand(5);
+              for (int i = 0; i < 21; ++i) {
+                for (int j = 0; j < 5; ++j) {
+                  subhand[j] = hand[comb_7_5[i][j]];
+                }
+                best = max(best, evaluate_naive_5(subhand));
+              }
+              return best;
+            }
+          ```);
 
           +p{
             それでは、関数 `int evaluate_naive_5(const vector<int> &hand);` を続いて
             定義していきましょう。ナイーブとは言えども、ビット演算を利用した効率的な実装を
             目指すこととし、まずは出現したスートとランクを管理するビットセットと、
             各ランクの出現回数を管理する変数を準備します。
+          }
 
-            \d-code(```
-              int suitset = 0;
-              int rankset = 0;
-              int rankcount[13] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-              for (int card : hand) {
-                int suit = card % 4;
-                int rank = card / 4;
-                suitset |= 1 << suit;
-                rankset |= 1 << rank;
-                ++rankcount[rank];
-              }
-            ```);
+          +code(```
+            int suitset = 0;
+            int rankset = 0;
+            int rankcount[13] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            for (int card : hand) {
+              int suit = card % 4;
+              int rank = card / 4;
+              suitset |= 1 << suit;
+              rankset |= 1 << rank;
+              ++rankcount[rank];
+            }
+          ```);
 
+          +p{
             さらに、出現回数からランクのビットセットを逆引きできる変数も準備します。
+          }
 
-            \d-code(```
-              int rankset_of_count[5] = { 0, 0, 0, 0, 0 };
-              for (int rank = 0; rank < 13; ++rank) {
-                rankset_of_count[rankcount[rank]] |= 1 << rank;
-              }
-            ```);
+          +code(```
+            int rankset_of_count[5] = { 0, 0, 0, 0, 0 };
+            for (int rank = 0; rank < 13; ++rank) {
+              rankset_of_count[rankcount[rank]] |= 1 << rank;
+            }
+          ```);
 
+          +p{
             以上の変数が用意できれば、フラッシュとストレートの判定は以下のように行えます。
+          }
 
-            \d-code(```
-              bool is_flush = count_ones(suitset) == 1;
-              int is_straight = rankset & (rankset << 1) & (rankset << 2)
-                              & (rankset << 3) & (rankset << 4);
-              if (rankset == 0b1'0000'0000'1111) is_straight = 1 << 3;
-            ```);
+          +code(```
+            bool is_flush = count_ones(suitset) == 1;
+            int is_straight = rankset & (rankset << 1) & (rankset << 2)
+                                      & (rankset << 3) & (rankset << 4);
+            if (rankset == 0b1'0000'0000'1111) is_straight = 1 << 3;
+          ```);
 
+          +p{
             ここで、`count_ones()` は2進数表記でのビットの立っている数を返す関数とします
             （gcc/clang における `__builtin_popcount()` と同様）。
             フラッシュの判定は明らかですが、ストレートの判定については解説が必要かもしれません。
             ストレートが成立している場合、ランクのビットセットは5桁連続でビットが立っている
             ことになります（5432Aの場合を除く）。このとき、ビットを0～4桁ズラしたもの同士で
             ビット論理積を取るとその結果は非ゼロとなります。
+          }
 
-            \d-code(```
-                0000000111110 (x)
-              & 0000001111100 (x << 1)
-              & 0000011111000 (x << 2)
-              & 0000111110000 (x << 3)
-              & 0001111100000 (x << 4)
-              ------------------------
-                0000000100000
-            ```);
+          +code(```
+              0000000111110 (x)
+            & 0000001111100 (x << 1)
+            & 0000011111000 (x << 2)
+            & 0000111110000 (x << 3)
+            & 0001111100000 (x << 4)
+            ------------------------
+              0000000100000
+          ```);
 
+          +p{
             逆に、ストレートが成立していない場合は、このビット論理積はゼロとなります。
             よって、唯一の例外である5432Aのストレートについて最後にケアしてあげれば、
             変数 `is_straight` は非ストレートの場合はゼロ、またストレートの場合は非ゼロでかつ
@@ -360,39 +372,39 @@ end = struct
             ここで返り値のフォーマットについて考える必要がありますが、
             上位4ビットに役の情報を、下位26ビットにタイブレークに関する情報を埋め込んだ
             30ビットの整数を用いることにしましょう。
-
-            \d-code(```
-              if (is_flush && is_straight) {
-                // straight flush
-                return (8 << 26) | is_straight;
-              } else if (rankset_of_count[4]) {
-                // four of a kind
-                return (7 << 26) | (rankset_of_count[4] << 13) | rankset_of_count[1];
-              } else if (rankset_of_count[3] && rankset_of_count[2]) {
-                // full house
-                return (6 << 26) | (rankset_of_count[3] << 13) | rankset_of_count[2];
-              } else if (is_flush) {
-                // flush
-                return (5 << 26) | rankset;
-              } else if (is_straight) {
-                // straight
-                return (4 << 26) | is_straight;
-              } else if (rankset_of_count[3]) {
-                // three of a kind
-                return (3 << 26) | (rankset_of_count[3] << 13) | rankset_of_count[1];
-              } else if (rankset_of_count[2]) {
-                // two pair or one pair
-                int num_pairs = count_ones(rankset_of_count[2]);
-                return (num_pairs << 26) | (rankset_of_count[2] << 13) | rankset_of_count[1];
-              } else {
-                // high card
-                return (0 << 26) | rankset;
-              }
-            ```);
           }
 
+          +code(```
+            if (is_flush && is_straight) {
+              // straight flush
+              return (8 << 26) | is_straight;
+            } else if (rankset_of_count[4]) {
+              // four of a kind
+              return (7 << 26) | (rankset_of_count[4] << 13) | rankset_of_count[1];
+            } else if (rankset_of_count[3] && rankset_of_count[2]) {
+              // full house
+              return (6 << 26) | (rankset_of_count[3] << 13) | rankset_of_count[2];
+            } else if (is_flush) {
+              // flush
+              return (5 << 26) | rankset;
+            } else if (is_straight) {
+              // straight
+              return (4 << 26) | is_straight;
+            } else if (rankset_of_count[3]) {
+              // three of a kind
+              return (3 << 26) | (rankset_of_count[3] << 13) | rankset_of_count[1];
+            } else if (rankset_of_count[2]) {
+              // two pair or one pair
+              int num_pairs = count_ones(rankset_of_count[2]);
+              return (num_pairs << 26) | (rankset_of_count[2] << 13) | rankset_of_count[1];
+            } else {
+              // high card
+              return (0 << 26) | rankset;
+            }
+          ```);
+
           +p{
-            以上がナイーブな実装についてでしたが、これだけで予想外に3ページ半も
+            以上がナイーブな実装についてでしたが、これだけで予想外に3ページ強も
             費やしてしまいました。タイブレークまで正確に考慮した実装を簡潔に記述するのは
             案外簡単ではないのではということで丁寧に解説してみましたが、いかがでしたでしょうか。
           }
@@ -421,34 +433,38 @@ end = struct
             注意力を要しますが、丁寧に考察をしていけばそれなりに簡潔に記述することが可能です。
             まずはユーティリティ関数として、立っているビットのうち上位から`n`ビットを保持する関数を
             定義しましょう:
+          }
 
-            \d-code(```
-              int keep_n_msb(int x, int n) {
-                int result = 0;
-                for (int i = 0; i < n; ++i) {
-                  int m = msb(x);
-                  x ^= m;
-                  result |= m;
-                }
-                return result;
+          +code(```
+            int keep_n_msb(int x, int n) {
+              int result = 0;
+              for (int i = 0; i < n; ++i) {
+                int m = msb(x);
+                x ^= m;
+                result |= m;
               }
-            ```);
+              return result;
+            }
+          ```);
 
+          +p{
             ここで、 `msb(x)` は入力 `x` の立っているビットのうち
             最上位のビットのみが立った値を返す関数とします
             （gcc/clangでは `int` 型に対しては `1 << (__builtin_clz(x) ^ 31)` として定義できます）。
             このような関数を用意できると、先ほどの例のようなスリーカードの処理は次のように
             書き下すことができます:
+          }
 
-            \d-code(```
-              // スリーカードより強い役ではないことが確認できているとする
-              if (rankset_of_count[3]) {
-                // three of a kind
-                int remaining = keep_n_msb(rankset_of_count[1], 2);
-                return (3 << 26) | (rankset_of_count[3] << 13) | remaining;
-              }
-            ```);
+          +code(```
+            // スリーカードより強い役ではないことが確認できているとする
+            if (rankset_of_count[3]) {
+              // three of a kind
+              int remaining = keep_n_msb(rankset_of_count[1], 2);
+              return (3 << 26) | (rankset_of_count[3] << 13) | remaining;
+            }
+          ```);
 
+          +p{
             本節では実装のすべての紹介は行いませんが、この戦略に基づく実装を実際に書いてみようと
             いう場合は、ストレートとフラッシュが両方成立しているからといってストレートフラッシュとは
             限らない点（ストレートフラッシュは同じスート内でストレートを完成させる必要がある）、
@@ -508,21 +524,21 @@ end = struct
             このようにフォーマットを定めてさえしまえば、あとは探索木なりハッシュテーブルなりで
             検索を行うことが可能になります。
             例えば、ハッシュテーブルを用いた実装は次のようになるでしょう:
-
-            \d-code(```
-              // ハッシュテーブルは前計算しておく
-              unordered_map<uint64_t, uint16_t> hash_table;
-
-              uint16_t evaluate_with_hash_table(const vector<int> &hand) {
-                int sorted[7];
-                copy(hand.begin(), hand.end(), sorted);
-                sort(sorted.begin(), sorted.end());
-                uint64_t lo = sorted[0] | (sorted[1]<<8) | (sorted[2]<<16) | (sorted[3]<<24);
-                uint64_t hi = sorted[4] | (sorted[5]<<8) | (sorted[6]<<16);
-                return hash_table[lo | (hi << 32)];
-              }
-            ```);
           }
+
+          +code(```
+            // ハッシュテーブルは前計算しておく
+            unordered_map<uint64_t, uint16_t> hash_table;
+
+            uint16_t evaluate_with_hash_table(const vector<int> &hand) {
+              int sorted[7];
+              copy(hand.begin(), hand.end(), sorted);
+              sort(sorted.begin(), sorted.end());
+              uint64_t lo = sorted[0] | (sorted[1] << 8) | (sorted[2] << 16) | (sorted[3] << 24);
+              uint64_t hi = sorted[4] | (sorted[5] << 8) | (sorted[6] << 16);
+              return hash_table[lo | (hi << 32)];
+            }
+          ```);
 
           +p {
             さてこれにて一件落着…としたいところなのですが、せっかく高速化の記事ですので
@@ -554,32 +570,35 @@ end = struct
             また16回という回数が下限である（＝最適である）ことも知られています
             （ソーティングネットワークでない一般の比較ソートでは比較回数の下限は13回となりますが、
             こちらはそれまでの比較結果に応じて比較対象が動的に変化します）。
+          }
 
-            \d-code(```
-              void sort_7(int *p) {
-                sort_2(p[0], p[4]); sort_2(p[1], p[5]); sort_2(p[2], p[6]);
-                sort_2(p[0], p[2]); sort_2(p[1], p[3]); sort_2(p[4], p[6]);
-                sort_2(p[2], p[4]); sort_2(p[3], p[5]);
-                sort_2(p[0], p[1]); sort_2(p[2], p[3]); sort_2(p[4], p[5]);
-                sort_2(p[1], p[4]); sort_2(p[3], p[6]);
-                sort_2(p[1], p[2]); sort_2(p[3], p[4]); sort_2(p[5], p[6]);
-              }
-            ```);
+          +code(```
+            void sort_7(int *p) {
+              sort_2(p[0], p[4]); sort_2(p[1], p[5]); sort_2(p[2], p[6]);
+              sort_2(p[0], p[2]); sort_2(p[1], p[3]); sort_2(p[4], p[6]);
+              sort_2(p[2], p[4]); sort_2(p[3], p[5]);
+              sort_2(p[0], p[1]); sort_2(p[2], p[3]); sort_2(p[4], p[5]);
+              sort_2(p[1], p[4]); sort_2(p[3], p[6]);
+              sort_2(p[1], p[2]); sort_2(p[3], p[4]); sort_2(p[5], p[6]);
+            }
+          ```);
 
-            続いて、2要素のソートを行う関数を定義する必要がありますが、SSE 4.1 (またはAVX) の
-            (v)pminsd, (v)pmaxsd 命令を利用することで条件分岐を完全に廃することを目指します。
+          +p{
+            続いて、2要素のソートを行う関数を定義する必要がありますが、
+            SSE 4.1 (またはAVX) 拡張命令の (v)pminsd, (v)pmaxsd 命令を利用することで
+            条件分岐を完全に廃することを目指します。
             手元の環境（gcc 10.2.0 -O3 -march=native）では、次のように記述することで
             vpminsd, vpmaxsd 命令が発行されました。
-
-            \d-code(```
-              void sort_2(int &a, int &b) {
-                int minv = a < b ? a : b;
-                int maxv = a >= b ? a : b;
-                a = minv;
-                b = maxv;
-              }
-            ```);
           }
+
+          +code(```
+            void sort_2(int &a, int &b) {
+              int minv = a < b ? a : b;
+              int maxv = a >= b ? a : b;
+              a = minv;
+              b = maxv;
+            }
+          ```);
 
           +p{
             ここまでのソートの高速化によって短縮された計算時間は、
@@ -624,40 +643,40 @@ end = struct
 
           +p{
             まずは、${\choose{n}{k}} を毎回計算するのを避けるため、これらを変数に代入します:
+          }
 
-            \d-code(```
-              // comb[i][j] は i choose (j + 1) を表す
-              vector<vector<int>> comb(52, vector<int>(7));
+          +code(```
+            // comb[i][j] は i choose (j + 1) を表す
+            vector<vector<int>> comb(52, vector<int>(7));
 
-              void prepare_comb_table() {
-                for (int i = 0; i < 52; ++i) {
-                  comb[i][0] = i;
-                  for (int j = 1; j < 7; ++j) {
-                    comb[i][j] = comb[i][j - 1] * (i - j) / (j + 1);
-                  }
+            void prepare_comb_table() {
+              for (int i = 0; i < 52; ++i) {
+                comb[i][0] = i;
+                for (int j = 1; j < 7; ++j) {
+                  comb[i][j] = comb[i][j - 1] * (i - j) / (j + 1);
                 }
               }
-            ```);
-          }
+            }
+          ```);
 
           +p{
             変数 `comb` を前計算したら、実際にテーブルを引く処理は次のように記述できます:
-
-            \d-code(```
-              // 配列は前計算しておく
-              vector<uint16_t> vec;
-
-              uint16_t evaluate_with_vector(const vector<int> &hand) {
-                int sorted[7];
-                copy(hand.begin(), hand.end(), sorted)
-                sort_7(sorted);
-                int key = comb[sorted[0]][0] + comb[sorted[1]][1] + comb[sorted[2]][2]
-                        + comb[sorted[3]][3] + comb[sorted[4]][4] + comb[sorted[5]][5]
-                        + comb[sorted[6]][6];
-                return vec[key];
-              }
-            ```);
           }
+
+          +code(```
+            // 配列は前計算しておく
+            vector<uint16_t> vec;
+
+            uint16_t evaluate_with_vector(const vector<int> &hand) {
+              int sorted[7];
+              copy(hand.begin(), hand.end(), sorted)
+              sort_7(sorted);
+              int key = comb[sorted[0]][0] + comb[sorted[1]][1] + comb[sorted[2]][2]
+                      + comb[sorted[3]][3] + comb[sorted[4]][4] + comb[sorted[5]][5]
+                      + comb[sorted[6]][6];
+              return vec[key];
+            }
+          ```);
 
           +p{
             このように、ハッシュテーブルを用いていた部分を単なる配列に差し替えることで、
@@ -700,20 +719,22 @@ end = struct
             このようにして構成されたグラフは実は124MBの容量に収まることが知られており、
             2006年頃にTwo Plus Twoというフォーラムで考案されたことから“Two Plus Two evaluator”
             などと呼ばれています。
-
-            \d-code(```
-              // 構成されたグラフを予めロードしておく
-              vector<int> hand_ranks(32487834);
-
-              int evaluate_two_plus_two(const vector<int> &hand) {
-                int p = 53;
-                for (int i = 0; i < 7; ++i) {
-                  p = hand_ranks[hand[i] + p + 1];
-                }
-                return p;
-              }
-            ```);
           }
+
+          +newpage;
+
+          +code(```
+            // 構成されたグラフを予めロードしておく
+            vector<int> hand_ranks(32487834);
+
+            int evaluate_two_plus_two(const vector<int> &hand) {
+              int p = 53;
+              for (int i = 0; i < 7; ++i) {
+                p = hand_ranks[hand[i] + p + 1];
+              }
+              return p;
+            }
+          ```);
 
           +p{
             評価関数は以上のように極めて単純なコードで記述することができ、
@@ -744,42 +765,44 @@ end = struct
           +p{
             まず第一の発明として、各カードを0～51の整数で表現するのではなく、
             次に示す32ビット整数として表現することを考えました:
-
-            \d-code(```
-              32-bit representation = |xxxAKQJT|98765432|cdhsrrrr|xxpppppp|
-
-              p: r番目の素数 (2->2, 3->3, ..., A->41)
-              r: ランクの4ビット表現 (2->0, 3->1, ..., A->12)
-              cdhs: スートのビットフラグ (例えばスペードなら0001となる)
-              AK...2: ランクのビットフラグ (例えば4なら00000|00000100となる)
-            ```);
           }
+
+          +newpage;
+
+          +code(```
+            32-bit representation = |xxxAKQJT|98765432|cdhsrrrr|xxpppppp|
+
+            p: r番目の素数 (2->2, 3->3, ..., A->41)
+            r: ランクの4ビット表現 (2->0, 3->1, ..., A->12)
+            cdhs: スートのビットフラグ (例えばスペードなら0001となる)
+            AK...2: ランクのビットフラグ (例えば4なら00000|00000100となる)
+          ```);
 
           +p{
             このように表現を行うと、5枚のカードからなるハンドの役判定の大枠は
             次のように記述することができます:
-
-            \d-code(```
-              uint16_t evaluate_cactus_kev_internal(int c1, int c2, int c3, int c4, int c5) {
-                // ランクのビットフラグの論理和 (最大値は0x1f00 = 7936)
-                int q = (c1 | c2 | c3 | c4 | c5) >> 16;
-
-                // フラッシュかどうかの判定
-                if (c1 & c2 & c3 & c4 & c5 & 0xf000) {
-                  // 変数qでテーブルを引く
-                  return flushes[q];
-                }
-
-                // ストレートおよびハイカードの場合はテーブルを引いて判定/処理
-                if (unique5[q]) {
-                  return unique5[q];
-                }
-
-                // フラッシュ/ストレート/ハイカードのいずれでもない場合の処理
-                return ???;
-              }
-            ```);
           }
+
+          +code(```
+            uint16_t evaluate_cactus_kev_internal(int c1, int c2, int c3, int c4, int c5) {
+              // ランクのビットフラグの論理和 (最大値は0b1'1111'0000'0000 = 7936)
+              int q = (c1 | c2 | c3 | c4 | c5) >> 16;
+
+              // フラッシュかどうかの判定
+              if (c1 & c2 & c3 & c4 & c5 & 0xf000) {
+                // 変数qでテーブルを引く
+                return flushes[q];
+              }
+
+              // ストレートおよびハイカードの場合はテーブルを引いて判定/処理
+              if (unique5[q]) {
+                return unique5[q];
+              }
+
+              // フラッシュ/ストレート/ハイカードのいずれでもない場合の処理
+              return ???;
+            }
+          ```);
 
           +p{
             フラッシュ/ストレート/ハイカードの場合の処理はたった7,937要素のテーブルを引くだけで
@@ -809,19 +832,19 @@ end = struct
             完全ハッシュ関数とは、定義域が定まっているときにそれらの入力に対して単射であるような
             （つまり衝突が無い）ハッシュ関数のことで、Paul Senzeeは具体的に以下のような
             マジカルな実装を与えました:
-
-            \d-code(```
-              unsigned find_fast(unsigned u) {
-                u += 0xe91aaa35;
-                u ^= u >> 16;
-                u += u << 8;
-                u ^= u >> 4;
-                unsigned a = (u + (u << 2)) >> 19;
-                unsigned b = (u >> 8) & 0x1ff;
-                return a ^ hash_adjust[b];
-              }
-            ```);
           }
+
+          +code(```
+            unsigned find_fast(unsigned u) {
+              u += 0xe91aaa35;
+              u ^= u >> 16;
+              u += u << 8;
+              u ^= u >> 4;
+              unsigned a = (u + (u << 2)) >> 19;
+              unsigned b = (u >> 8) & 0x1ff;
+              return a ^ hash_adjust[b];
+            }
+          ```);
 
           +p{
             ここで、`hash_adjust` は要素数512のマジカルな配列ですが、この関数を用いると
@@ -829,13 +852,13 @@ end = struct
             よって、8,192要素の配列 `hash_values` を前計算することで、
             フラッシュ/ストレート/ハイカードのいずれでもない場合の処理は
             次のように記述できるようになりました。
-
-            \d-code(```
-              return hash_values[find_fast(
-                (c1 & 0x3f) * (c2 & 0x3f) * (c3 & 0x3f) * (c4 & 0x3f) * (c5 & 0x3f)
-              )];
-            ```);
           }
+
+          +code(```
+            return hash_values[find_fast(
+              (c1 & 0x3f) * (c2 & 0x3f) * (c3 & 0x3f) * (c4 & 0x3f) * (c5 & 0x3f)
+            )];
+          ```);
 
           +p{
             ここまでに用意したテーブルの容量は48KB程度と、これまでに見てきたテーブルとは
@@ -962,11 +985,13 @@ end = struct
             と呼ばれる手法に基づくハッシュ関数を構築することを考えていきます。
             Single-displacement 法では、次に示すような非常に単純なプログラムで
             ハッシュ値を計算します:
+          }
 
-            \d-code(```
-              hash_key = offset[input_value / t] + (input_value % t);
-            ```);
+          +code(```
+            hash_key = offset[input_value / t] + (input_value % t);
+          ```);
 
+          +p{
             ここで、`offset` はマジカルなテーブルでこれから構築を目指す対象、${t} は
             ハッシュ関数の挙動を定めるパラメータですが、これだけでは何のこっちゃという
             感じだと思いますので、ここからは定義域を48未満の素数、また ${t = 8} として
@@ -975,43 +1000,47 @@ end = struct
 
           +p{
             ${t = 8} ですので、あり得る入力を長さ8の行に分割して次のような表を得ます:
-
-            \d-code(```
-              .. ..  2  3 ..  5 ..  7
-              .. .. .. 11 .. 13 .. ..
-              .. 17 .. 19 .. .. .. 23
-              .. .. .. .. .. 29 .. 31
-              .. .. .. .. .. 37 .. ..
-              .. 41 .. 43 .. .. .. 47
-            ```);
-
-            このハッシュ関数の構築において、応用上優れたパフォーマンスを発揮することが知られている
-            First-fit-decreasing 法 \footnote{R. E. Tarjan and A. C. C. Yao.
-            \dfn{Storing a Sparse Table.} Communications of the ACM, 22(11):606-611. 1979.}
-            では、次にこれらの行を要素数が多い順に並び替えます:
-
-            \d-code(```
-              .. ..  2  3 ..  5 ..  7
-              .. 17 .. 19 .. .. .. 23
-              .. 41 .. 43 .. .. .. 47
-              .. .. .. 11 .. 13 .. ..
-              .. .. .. .. .. 29 .. 31
-              .. .. .. .. .. 37 .. ..
-            ```);
-
-            最後に、各列で衝突が発生しないように、上の行から順に可能な限り小さい値でシフトします:
-
-            \d-code(```
-              shift(-2) .. .. |  2  3 ..  5 ..  7
-              shift(+1)       |    .. 17 .. 19 .. .. .. 23
-              shift(+6)       |                   .. 41 .. 43 .. .. .. 47
-              shift(+7)       |                      .. .. .. 11 .. 13 .. ..
-              shift(+9)       |                            .. .. .. .. .. 29 .. 31
-              shift(+1)       |    .. .. .. .. .. 37 .. ..
-              ----------------+---------------------------------------------------
-                        .. .. |  2  3 17  5 19  7 37 41 23 43 11 .. 13 47 29 .. 31
-            ```);
           }
+
+          +code(```
+            .. ..  2  3 ..  5 ..  7
+            .. .. .. 11 .. 13 .. ..
+            .. 17 .. 19 .. .. .. 23
+            .. .. .. .. .. 29 .. 31
+            .. .. .. .. .. 37 .. ..
+            .. 41 .. 43 .. .. .. 47
+          ```);
+
+          +p{
+            このハッシュ関数の構築において、多くの場合に優れたパフォーマンスを発揮することが
+            知られている First-fit-decreasing 法 \footnote{R. E. Tarjan and A. C. C. Yao.
+            \dfn{Storing a Sparse Table.} Communications of the ACM, 22(11):606-611. 1979.}
+            というヒューリスティクスでは、次にこれらの行を要素数が多い順に並び替えます:
+          }
+
+          +code(```
+            .. ..  2  3 ..  5 ..  7
+            .. 17 .. 19 .. .. .. 23
+            .. 41 .. 43 .. .. .. 47
+            .. .. .. 11 .. 13 .. ..
+            .. .. .. .. .. 29 .. 31
+            .. .. .. .. .. 37 .. ..
+          ```);
+
+          +p{
+            最後に、各列で衝突が発生しないよう、上の行から順に可能な限り小さい値でシフトします:
+          }
+
+          +code(```
+            shift(-2) .. .. |  2  3 ..  5 ..  7
+            shift(+1)       |    .. 17 .. 19 .. .. .. 23
+            shift(+6)       |                   .. 41 .. 43 .. .. .. 47
+            shift(+7)       |                      .. .. .. 11 .. 13 .. ..
+            shift(+9)       |                            .. .. .. .. .. 29 .. 31
+            shift(+1)       |    .. .. .. .. .. 37 .. ..
+            ----------------+---------------------------------------------------
+                      .. .. |  2  3 17  5 19  7 37 41 23 43 11 .. 13 47 29 .. 31
+          ```);
 
           +p{
             このシフト量が先ほどマジカルなテーブルと言った `offset` に対応していて、
@@ -1030,28 +1059,32 @@ end = struct
           +p{
             さて、ここまで準備できればいよいよ実装に取り掛かることができます。
             まずは、ランクの基底となる定数を定義しましょう:
+          }
 
-            \d-code(```
-              const uint32_t rank_bases[13] = {
-                0x002000, 0x008001, 0x011000, 0x03a000, 0x091000, 0x176005, 0x366000,
-                0x41a013, 0x47802e, 0x479068, 0x48c0e4, 0x48f211, 0x494493,
-              };
-            ```);
+          +code(```
+            const uint32_t rank_bases[13] = {
+              0x002000, 0x008001, 0x011000, 0x03a000, 0x091000, 0x176005, 0x366000,
+              0x41a013, 0x47802e, 0x479068, 0x48c0e4, 0x48f211, 0x494493,
+            };
+          ```);
 
+          +p{
             続いて、ハンドのデータを表現する構造体を作ります。
             SIMD命令による高速化を可能にするため、構造体は共用体の中に定義することにします:
+          }
 
-            \d-code(```
-              union HandData {
-                struct {
-                  uint32_t rank_key;
-                  uint32_t suit_key;
-                  uint64_t bit_flag;
-                } s;
-                __m128i simd_reg;
-              };
-            ```);
+          +code(```
+            union HandData {
+              struct {
+                uint32_t rank_key;
+                uint32_t suit_key;
+                uint64_t bit_flag;
+              } s;
+              __m128i simd_reg;
+            };
+          ```);
 
+          +p{
             ここで、`simd_reg` は構造体を128ビットレジスタとしても扱えるようにするための
             メンバ変数です。
             `rank_key` では先ほど定義したランクの基底の和を管理し、`suit_key` の
@@ -1063,34 +1096,38 @@ end = struct
 
           +p{
             このように `HandData` 共用体を定義したら、各カードを次のように定数として定義できます:
+          }
 
-            \d-code(```
-              const HandData cards[52] = {
-                /* 2c */ {{ rank_bases[0], 0x1000'0000, 0x0000'0000'0000'0001 }},
-                /* 2d */ {{ rank_bases[0], 0x0100'0000, 0x0000'0000'0001'0000 }},
-                /* 2h */ {{ rank_bases[0], 0x0010'0000, 0x0000'0001'0000'0000 }},
-                /* 2s */ {{ rank_bases[0], 0x0001'0000, 0x0001'0000'0000'0000 }},
-                /* 3c */ {{ rank_bases[1], 0x1000'0000, 0x0000'0000'0000'0002 }},
-                (中略),
-                /* As */ {{ rank_bases[12], 0x0001'0000, 0x1000'0000'0000'0000 }},
-              };
-            ```);
+          +code(```
+            const HandData cards[52] = {
+              /* 2c */ {{ rank_bases[0], 0x1000'0000, 0x0000'0000'0000'0001 }},
+              /* 2d */ {{ rank_bases[0], 0x0100'0000, 0x0000'0000'0001'0000 }},
+              /* 2h */ {{ rank_bases[0], 0x0010'0000, 0x0000'0001'0000'0000 }},
+              /* 2s */ {{ rank_bases[0], 0x0001'0000, 0x0001'0000'0000'0000 }},
+              /* 3c */ {{ rank_bases[1], 0x1000'0000, 0x0000'0000'0000'0002 }},
+              (中略),
+              /* As */ {{ rank_bases[12], 0x0001'0000, 0x1000'0000'0000'0000 }},
+            };
+          ```);
 
+          +p{
             さらに、実装の肝となる `Hand` 構造体も続けて定義していきましょう:
+          }
 
-            \d-code(```
-              class Hand {
-              public:
-                Hand() : data{{ 0, 0x3333'0000, 0 }} {}
-                Hand(__m128i simd_reg) : data{.simd_reg = simd_reg} {}
-                Hand add_card(int card) const;
-                uint16_t evaluate() const;
+          +code(```
+            class Hand {
+            public:
+              Hand() : data{{ 0, 0x3333'0000, 0 }} {}
+              Hand(__m128i simd_reg) : data{.simd_reg = simd_reg} {}
+              Hand add_card(int card) const;
+              uint16_t evaluate() const;
 
-              private:
-                HandData data;
-              };
-            ```);
+            private:
+              HandData data;
+            };
+          ```);
 
+          +p{
             デフォルトコンストラクタでは、`suit_key` をカウンタの初期値が3となるよう
             `0x3333'0000` で初期化し、他のメンバは `0` で初期化しています。
             また、`simd_reg` を引数とするコンストラクタも定義しておきます。
@@ -1100,30 +1137,32 @@ end = struct
             残るは `Hand::add_card()` と `Hand::evaluate()` の実装のみです。
             `Hand::add_card()` については簡単で、自分自身に `cards[card]` を足し合わせたものを
             返せば良く、SIMD命令を用いるように実装すると次のようになります:
-
-            \d-code(```
-              Hand Hand::add_card(int card) const {
-                return Hand{_mm_add_epi64(data.simd_reg, cards[card].simd_reg)};
-              }
-            ```);
           }
+
+          +code(```
+            Hand Hand::add_card(int card) const {
+              return Hand{_mm_add_epi64(data.simd_reg, cards[card].simd_reg)};
+            }
+          ```);
 
           +p{
             最後に、`Hand::evaluate()` の実装を先に与えてしまうと次のようになります:
+          }
 
-            \d-code(```
-              uint16_t Hand::evaluate() const {
-                uint32_t is_flush = data.s.suit_key & 0x8888'0000;
-                if (is_flush) {
-                  uint16_t flush_key = data.s.bit_flag >> (4 * leading_zeros(is_flush));
-                  return lookup_flush[flush_key];
-                } else {
-                  uint32_t hash_key = offset[data.s.rank_key >> 12] + data.s.rank_key;
-                  return lookup[hash_key];
-                }
+          +code(```
+            uint16_t Hand::evaluate() const {
+              uint32_t is_flush = data.s.suit_key & 0x8888'0000;
+              if (is_flush) {
+                uint16_t flush_key = data.s.bit_flag >> (4 * leading_zeros(is_flush));
+                return lookup_flush[flush_key];
+              } else {
+                uint32_t hash_key = offset[data.s.rank_key >> 12] + data.s.rank_key;
+                return lookup[hash_key];
               }
-            ```);
+            }
+          ```);
 
+          +p{
             ここで、`leading_zeros()` は2進数表記での leading zero の個数を返す関数です
             （gcc/clang における `__builtin_clz()` と同様）。
             以下簡単に `Hand::evaluate()` の実装を解説すると、2行目における `is_flush` の定義では、
