@@ -14,46 +14,16 @@ module Code2 : sig
 
 end = struct
   
-  let code-fill-color = Gray(0.925)
-  let code-stroke-color = Gray(0.925)
+  let code-fill-color = Gray(1.0)
+  let code-stroke-color = Gray(0.25)
   let console-fill-color = Gray(0.25)
 
 
   let decoset-code =
-    VDecoSet.simple-frame 1pt code-stroke-color code-fill-color
-
-
-  let dummy _ =
-    let strokef = stroke 1pt code-stroke-color in
-    let gr-back x y w d h =
-      fill code-fill-color (Gr.rectangle (x, y -' d) (x +' w, y +' h))
+    let deco (x, y) w h d =
+      [ fill code-stroke-color (Gr.rectangle (x, y -' d) (x +' 2pt, y +' h))]
     in
-    let decoS (x, y) w h d =
-      [
-        gr-back x y w d h;
-        strokef (Gr.rectangle (x, y -' d) (x +' w, y +' h));
-      ]
-    in
-    let decoH (x, y) w h d =
-      [
-        gr-back x y w d h;
-        strokef (Gr.poly-line (x, y -' d) [(x, y +' h); (x +' w, y +' h); (x +' w, y -' d);])
-      ]
-    in
-    let decoM (x, y) w h d =
-      [
-        gr-back x y w d h;
-        strokef (Gr.line (x, y -' d) (x, y +' h));
-        strokef (Gr.line (x +' w, y -' d) (x +' w, y +' h));
-      ]
-    in
-    let decoT (x, y) w h d =
-      [
-        gr-back x y w d h;
-        strokef (Gr.poly-line (x, y +' h) [(x, y -' d); (x +' w, y -' d); (x +' w, y +' h)])
-      ]
-    in
-      (decoS, decoH, decoM, decoT)
+    (deco, deco, deco, deco)
 
 
   let decoset-console =
@@ -64,12 +34,13 @@ end = struct
 
 
   let set-code-font ctx =
-    ctx |> set-font Latin (`lmmono`, 1., 0.)
-        |> set-hyphen-penalty 100000
-
+    ctx |> set-font Latin (`fonts-dejavu:DejaVuSansMono`, 1., 0.)
+    |> set-font Kana (`fonts-noto-sans-cjk-jp:NotoSansMonoCJKjp-Regular`, 1., 0.)
+    |> set-font HanIdeographic (`fonts-noto-sans-cjk-jp:NotoSansMonoCJKjp-Regular`, 1., 0.)
+    |> set-hyphen-penalty 100000
 
   let scheme decoset txtcolor ctx code =
-    let pads = (10pt, 10pt, 10pt, 10pt) in
+    let pads = (15pt, 10pt, 10pt, 10pt) in
     block-frame-breakable ctx pads decoset (fun ctx -> (
       let fontsize = get-font-size ctx in
       let ctx = ctx |> set-code-font
@@ -78,7 +49,7 @@ end = struct
       let ctx-code =
         ctx |> set-space-ratio (charwid /' fontsize) 0. 0.
             |> set-text-color txtcolor
-            |> set-font-size (fontsize *' 0.9)
+            |> set-font-size (fontsize *' 0.8)
       in
 
       let lstraw = split-into-lines code in
@@ -108,7 +79,7 @@ end = struct
 
 
   let-block ctx +code code =
-    scheme decoset-code (Gray(0.12)) ctx code
+    scheme decoset-code (Gray(0.25)) ctx code
 
 
   let-inline ctx \d-code code =
