@@ -30,17 +30,11 @@ document (|
   author = `yabaitech.tokyo`;
   email = `admin@yabaitech.tokyo`;
   website = `https://yabaitech.tokyo`;
-  publisher = `どこかの出版社`;
+  publisher = `(vol.6は電子書籍のみの出版です)`;
   front = Option.none;
   history = `pohe`;
   |) '<
-    #Zeptometer.article;
-    #Gfn.article;
-    #Irnbru.article;
-    #MasWag.article;
     #Binary.article;
-    #NullpoHead.article;
+    #MasWag.article;
     #Wasabiz.article;
-    #Censored.article;
-    #Mh.article;
->
+  >
