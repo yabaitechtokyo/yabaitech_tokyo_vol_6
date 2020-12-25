@@ -136,7 +136,7 @@ while (1) {
 $$
 \overline L =
 \begin{cases}
-\lnot V & (L = V) \\\
+\lnot V & (L = V) \\
 V & (L = \lnot V)
 \end{cases}
 $$
@@ -444,7 +444,7 @@ bool find_conflict() {
 問題はこの不変条件をどのようにして保ち続けるかです。そこで、監視リストの定義を以下のようにします。
 
 1. 各節に対してその中の異なる二つのリテラルを選ぶ。それらを_監視リテラル (watched literal)_ と呼ぶ。節$c$の監視リテラルを$W_0(c), W_1(c)$と書くことにする。
-1. 監視リストは次のように定義する: $\mathrm{watchlist}(L) = \\{ c \mid W_0(c) = L \text{ or } W_1(c) = L \\}$
+1. 監視リストは次のように定義する: $\mathrm{watchlist}(L) = \{ c \mid W_0(c) = L \text{ or } W_1(c) = L \}$
 
 その上で、以下の不変条件を考えます。
 
@@ -963,7 +963,7 @@ void analyze(clause * conflict) {
 
 $$
 \mathrm{score}_k(c) = \begin{cases}
-  |c| & (|c| < k) \\\
+  |c| & (|c| < k) \\
   |c| + \omega & (\omega \in [0,1))
 \end{cases}
 $$
@@ -1270,7 +1270,7 @@ int choose() {
 
 $$
 t_i = \begin{cases}
-k2^{j-1} & (\text{$i = 2^j - 1$ for some $j$}) \\\
+k2^{j-1} & (\text{$i = 2^j - 1$ for some $j$}) \\
 t_{i - 2^{j-1} + 1} (2^{j - 1} \le i \le 2^j - 1)
 \end{cases}
 $$
@@ -1316,9 +1316,9 @@ while (1) {
 
 $$
 \begin{align}
-(u_0, v_0) &= (1, 1) \\\
+(u_0, v_0) &= (1, 1) \\
 (u_{i+1}, v_{i+1}) &= \begin{cases}
-(u_n + 1, 1) & (\mathrm{bitwiseAND}(u_n, -u_n) = v_n) \\\
+(u_n + 1, 1) & (\mathrm{bitwiseAND}(u_n, -u_n) = v_n) \\
 (u_n, 2v_n) & (\text{otherwise})
 \end{cases}
 \end{align}
