@@ -1194,7 +1194,7 @@ while (1) {
     reduce(); // この行を追加
 }`);
 +p {
-  節を表す構造体に\code(`score`);というフィールドを追加しています。\code(`score`);が小さいほど節が削除の対象になりにくいです。\code(`flags`);は先程言及したもののコードは見せなかったものです。\code(`CLAUSE_LEARNT`);に加えて\code(`CLAUSE_LOCK`);というビットフラグを追加しています。(用途は後述。)
+  節を表す構造体に\code(`score`);というフィールドを追加しています。\code(`score`);が小さいほど節が削除の対象になりにくいです。\code(`flags`);と\code(`CLAUSE_LEARNT`);は先程言及したもののコードは見せなかったものです。ここでは新しく\code(`CLAUSE_LOCK`);というビットフラグを追加しています。(用途は後述。)
 }
 +code(`
 enum {
@@ -1294,8 +1294,7 @@ int choose() {
 +code(`
 vector<double> activity;`);
 +p {
-  スコアの操作には二種類のクエリがあります。一つが、ある変数のスコアを上昇させる操作(\code(`bump_activity()`);)、もう一つが全てのスコアを定期的に定数で割る操作(\code(`decay_activity()`);)です。
-\code(`analyze()`);は変数出現を一回見つけるたびに\code(`bump_activity()`);を呼び、スコアを\code(`+1`);します。ソルバーのメインループである\code(`solve()`);は空節が見つかるたびに\code(`decay_activity()`);を呼び、定期的に全てのスコアを半減させます。
+  スコアの操作には二種類のクエリがあります。一つが、ある変数のスコアを上昇させる操作、もう一つが全てのスコアを定期的に定数で割る操作です。コード上はそれぞれ\code(`bump_activity()`);、\code(`decay_activity()`);が対応します。\code(`analyze()`);は変数出現を一回見つけるたびに\code(`bump_activity()`);を呼び、スコアを\code(`+1`);します。ソルバーのメインループである\code(`solve()`);は空節が見つかるたびに\code(`decay_activity()`);を呼び、定期的に全てのスコアを半減させます。
 }
 +code(`
 void bump_activity(uint v) {
