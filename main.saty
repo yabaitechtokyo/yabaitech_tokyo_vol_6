@@ -13,7 +13,7 @@
 
 let () = Debug.log ``
 =====================
-YABAITECH.TOKYO vol.5
+YABAITECH.TOKYO vol.6
 
 　 ∧,,∧
 　(；`・ω・）　　｡･ﾟ･⌒） pdf 作るよ！！
@@ -26,7 +26,8 @@ YABAITECH.TOKYO vol.5
 let colophon = ColophonData.make (|
   title = `YABAITECH.TOKYO vol.6`;
   history = [
-    `2020年12月26日 第一刷 発行`;
+    `2020年12月26日 技術書典10版(電子版)`;
+    `2021年7月10日 技術書典11版(書籍版)`
   ];
   publisher = (Option.some `yabaitech.tokyo`);
   website = (Option.some `http://yabaitech.tokyo`);
@@ -38,7 +39,7 @@ document (|
   title = `YABAITECH.TOKYO`;
   volume = `vol.6`;
   date = `2020`;
-  front = Option.some `front.pdf`;
+  front = Option.none;
   colophon = colophon;
 |) '<
     #Binary.article;
