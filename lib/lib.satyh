@@ -1,0 +1,9 @@
+module YT6Lib = struct
+
+  let-inline ctx \force-newline =
+    discretionary (- 1000) inline-nil inline-fil inline-nil
+
+  let-block ctx +clear-page =
+    clear-page
+
+end
