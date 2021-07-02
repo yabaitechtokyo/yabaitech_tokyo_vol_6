@@ -39,7 +39,7 @@ document (|
   title = `YABAITECH.TOKYO`;
   volume = `vol.6`;
   date = `2020`;
-  front = Option.none;
+  front = Option.some `front.pdf`;
   colophon = colophon;
 |) '<
     #Binary.article;
